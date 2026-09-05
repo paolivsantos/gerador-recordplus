@@ -1,62 +1,69 @@
 import streamlit as st
 
-# Configuração da página (deve ser o primeiro comando do Streamlit)
 st.set_page_config(
-    page_title="Meu Projeto Streamlit",
-    page_icon="🎨",
+    page_title="Gerador de HTML Personalizado",
+    page_icon="🛠️",
     layout="wide"
 )
 
-# Injeção de CSS personalizado
+# Estilização da interface do Streamlit para manter o padrão escuro
 st.markdown("""
     <style>
-    /* Fundo geral da aplicação e cor do texto */
     .stApp {
         background-color: #121212;
         color: #ffffff;
     }
-    
-    /* Forçar cor de textos gerais para branco */
-    p, span, label, h1, h2, h3, h4, h5, h6 {
+    p, span, label, h1, h2, h3 {
         color: #ffffff !important;
     }
-    
-    /* Links personalizados */
-    a, a:visited {
+    a {
         color: #AF68BA !important;
-        text-decoration: underline;
-    }
-    
-    a:hover {
-        color: #c782d1 !important;
-    }
-    
-    /* Estilização para tabelas e containers */
-    .table-container {
-        background-color: #1e1e1e;
-        color: #ffffff;
-    }
-    
-    th {
-        background-color: #2c2c2c !important;
-        color: #ffffff !important;
-        border-bottom: 2px solid #444444 !important;
-    }
-    
-    td {
-        border-bottom: 1px solid #333333 !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Conteúdo principal da aplicação
-st.title("Painel do Projeto")
-st.write("Este é o seu ambiente configurado com o tema escuro e os links customizados.")
+st.title("Gerador de HTML com Diretrizes Visuais")
+st.write("Insira seu texto ou conteúdo abaixo para gerar o bloco HTML estilizado com o fundo escuro, texto branco e links em `#AF68BA`.")
 
-# Exemplo de link interativo
-st.markdown("Confira mais detalhes acessando a [documentação do Streamlit](https://docs.streamlit.io).")
+# Área de entrada do texto pelo usuário
+texto_usuario = st.text_area("Digite o conteúdo do texto:", "Exemplo: Acesse nosso portal em https://exemplo.com para mais detalhes.")
 
-# Exemplo de componente interativo simples
-nome = st.text_input("Digite o seu nome:")
-if nome:
-    st.success(f"Seja bem-vindo, {nome}!")
+# Opção para formatar links automaticamente se houver URLs no texto
+def aplicar_estilos_html(texto):
+    # Estrutura base do HTML seguindo as diretrizes
+    html_gerado = f"""
+<div style="background-color: #121212; color: #ffffff; font-family: Arial, sans-serif; padding: 20px;">
+    <p style="color: #ffffff; line-height: 1.6;">{texto.replace('\n', '<br>')}</p>
+</div>
+<style>
+    a, a:visited {{
+        color: #AF68BA !important;
+        text-decoration: underline;
+    }}
+    a:hover {{
+        color: #c782d1 !important;
+    }}
+    .table-container {{
+        background-color: #1e1e1e;
+        color: #ffffff;
+    }}
+    th {{
+        background-color: #2c2c2c !important;
+        color: #ffffff !important;
+        border-bottom: 2px solid #444444 !important;
+    }}
+    td {{
+        border-bottom: 1px solid #333333 !important;
+    }}
+</style>
+"""
+    return html_gerado.strip()
+
+if texto_usuario:
+    html_resultado = aplicar_estilos_html(texto_usuario)
+    
+    st.subheader("HTML Gerado:")
+    st.code(html_resultado, language="html")
+    
+    st.subheader("Pré-visualização:")
+    st.markdown(html_resultado, unsafe_allow_html=True)
