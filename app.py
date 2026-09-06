@@ -1,12 +1,12 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Gerador de HTML Personalizado",
-    page_icon="🛠️",
+    page_title="Gerador de HTML - RecordPlus",
+    page_icon="📄",
     layout="wide"
 )
 
-# Estilização da interface do Streamlit para manter o padrão escuro
+# Estilização do painel do Streamlit
 st.markdown("""
     <style>
     .stApp {
@@ -16,54 +16,85 @@ st.markdown("""
     p, span, label, h1, h2, h3 {
         color: #ffffff !important;
     }
-    a {
-        color: #AF68BA !important;
-    }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Gerador de HTML com Diretrizes Visuais")
-st.write("Insira seu texto ou conteúdo abaixo para gerar o bloco HTML estilizado com o fundo escuro, texto branco e links em `#AF68BA`.")
+st.title("Gerador de HTML para Embed - RecordPlus")
+st.write("Preencha os campos abaixo para atualizar o conteúdo mantendo exatamente o mesmo layout padrão.")
 
-# Área de entrada do texto pelo usuário
-texto_usuario = st.text_area("Digite o conteúdo do texto:", "Exemplo: Acesse nosso portal em https://exemplo.com para mais detalhes.")
-
-# Opção para formatar links automaticamente se houver URLs no texto
-def aplicar_estilos_html(texto):
-    # Estrutura base do HTML seguindo as diretrizes
-    html_gerado = f"""
-<div style="background-color: #121212; color: #ffffff; font-family: Arial, sans-serif; padding: 20px;">
-    <p style="color: #ffffff; line-height: 1.6;">{texto.replace('\n', '<br>')}</p>
-</div>
-<style>
-    a, a:visited {{
-        color: #AF68BA !important;
-        text-decoration: underline;
-    }}
-    a:hover {{
-        color: #c782d1 !important;
-    }}
-    .table-container {{
-        background-color: #1e1e1e;
-        color: #ffffff;
-    }}
-    th {{
-        background-color: #2c2c2c !important;
-        color: #ffffff !important;
-        border-bottom: 2px solid #444444 !important;
-    }}
-    td {{
-        border-bottom: 1px solid #333333 !important;
-    }}
-</style>
-"""
-    return html_gerado.strip()
-
-if texto_usuario:
-    html_resultado = aplicar_estilos_html(texto_usuario)
+# Organização em abas ou seções para facilitar o preenchimento
+with st.form("form_gerador"):
+    st.subheader("Cabeçalho e Títulos")
+    titulo_pagina = st.text_input("Título Principal da Página", "Aviso de Privacidade RecordPlus")
     
-    st.subheader("HTML Gerado:")
-    st.code(html_resultado, language="html")
+    st.subheader("Conteúdo Principal")
+    paragrafo_intro = st.text_area(
+        "Parágrafo introdutório",
+        "O RecordPlus leva a sério a privacidade e reconhece que você se preocupa como utilizamos e compartilhamos das suas informações pessoais..."
+    )
     
+    # Botão para gerar o código
+    submit_button = st.form_submit_button(label="Gerar HTML Final")
+
+if submit_button:
+    # Template HTML estruturado idêntico ao modelo fornecido, injetando os textos dinâmicos
+    html_gerado = f"""<!DOCTYPE html>
+<html data-theme="dark" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <title>RecordPlus | Vídeos, rádios, podcasts para você curtir como quiser.</title>
+    <link id="icon" rel="icon" type="image/png" href="https://www.recordplus.com/content/images/faviconrecordplus.ico">
+    <link href="https://www.recordplus.com/content/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.recordplus.com/content/theme.css">
+    <link rel="stylesheet" href="https://www.recordplus.com/content/styles.css">
+    <link rel="stylesheet" href="https://www.recordplus.com/content/help.css">
+    <link rel="stylesheet" href="https://www.recordplus.com/content/Header.css">
+</head>
+<body>
+    <div id="modal_container"></div>
+    <div class="menu-overlay"></div>
+    
+    <div class="header">
+        <div class="menu-left-wrapper">
+            <a href="https://www.recordplus.com/">
+                <img alt="Play PLUS" class="img-header" src="https://www.recordplus.com/content/images/im_logo_recordplus.png">
+            </a>
+        </div>
+        <div class="buutton-login-wrapper">
+            <p>Já possui conta?</p>
+            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login">
+                Acesse
+            </a>
+        </div>
+    </div>
+
+    <div class="container-help mt-100">
+        <h1 class="home-section-termos-title">{titulo_pagina}</h1>
+        <span class="category-line-termos line-termos"></span>
+
+        <p>{paragrafo_intro}</p>
+        
+        <!-- O restante da estrutura fixa ou dinâmica da página entra aqui -->
+    </div>
+
+    <footer data-theme="light">
+        <div class="bottom-footer">
+            <ul class="list-footer">
+                <li><a href="https://www.recordplus.com/help/termosdeuso">Termos de Uso </a><span>|</span></li>
+                <li><a href="https://www.recordplus.com/help/politica">Privacidade</a>  <span>|</span></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>"""
+
+    st.success("HTML gerado com sucesso!")
+    
+    # Exibe o código pronto para cópia
+    st.subheader("Código HTML gerado:")
+    st.code(html_gerado, language="html")
+    
+    # Visualização de como o bloco se comporta
     st.subheader("Pré-visualização:")
-    st.markdown(html_resultado, unsafe_allow_html=True)
+    st.markdown(html_gerado, unsafe_allow_html=True)
