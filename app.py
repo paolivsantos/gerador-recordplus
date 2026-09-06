@@ -6,23 +6,9 @@ st.set_page_config(
     layout="wide"
 )
 
-# Estilização do painel do Streamlit
-st.markdown("""
-    <style>
-    .stApp {
-        background-color: #121212;
-        color: #ffffff;
-    }
-    p, span, label, h1, h2, h3 {
-        color: #ffffff !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 st.title("Gerador de HTML para Embed - RecordPlus")
 st.write("Preencha os campos abaixo para atualizar o conteúdo mantendo exatamente o mesmo layout padrão.")
 
-# Organização em abas ou seções para facilitar o preenchimento
 with st.form("form_gerador"):
     st.subheader("Cabeçalho e Títulos")
     titulo_pagina = st.text_input("Título Principal da Página", "Aviso de Privacidade RecordPlus")
@@ -33,11 +19,9 @@ with st.form("form_gerador"):
         "O RecordPlus leva a sério a privacidade e reconhece que você se preocupa como utilizamos e compartilhamos das suas informações pessoais..."
     )
     
-    # Botão para gerar o código
     submit_button = st.form_submit_button(label="Gerar HTML Final")
 
 if submit_button:
-    # Template HTML estruturado idêntico ao modelo fornecido, injetando os textos dinâmicos
     html_gerado = f"""<!DOCTYPE html>
 <html data-theme="dark" lang="pt-br">
 <head>
@@ -74,8 +58,6 @@ if submit_button:
         <span class="category-line-termos line-termos"></span>
 
         <p>{paragrafo_intro}</p>
-        
-        <!-- O restante da estrutura fixa ou dinâmica da página entra aqui -->
     </div>
 
     <footer data-theme="light">
@@ -91,10 +73,5 @@ if submit_button:
 
     st.success("HTML gerado com sucesso!")
     
-    # Exibe o código pronto para cópia
     st.subheader("Código HTML gerado:")
     st.code(html_gerado, language="html")
-    
-    # Visualização de como o bloco se comporta
-    st.subheader("Pré-visualização:")
-    st.markdown(html_gerado, unsafe_allow_html=True)
