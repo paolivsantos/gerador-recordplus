@@ -97,7 +97,7 @@ with st.sidebar:
         * **Links**: `[Texto](https://url.com)`
         * **Listas**: Inicie com `- ` ou `* ` (**com espaço**).
         * **Sub-listas**: 2 espaços antes do `- ` ou `* `.
-        * **Tabelas**: Separe colunas por vírgula (a 1ª vírgula divide as colunas) ou use pipe `|`.
+        * **Tabelas**: Separe colunas por vírgula (a 1ª vírgula divide as colunas).
         """)
 
 if 'secoes' not in st.session_state:
@@ -163,7 +163,6 @@ for i, secao in enumerate(st.session_state.secoes):
             
             t_tab = st.session_state.secoes[i]['titulo']
             cab_raw = st.session_state.secoes[i]['cabecalho']
-            # Divide o cabeçalho considerando apenas a primeira vírgula (ou split padrão se preferir, aqui limitamos a 2 colunas se houver múltiplas vírgulas, ou tratamos via maxsplit=1)
             if ',' in cab_raw and cab_raw.count(',') > 1:
                 cab_tab = [c.strip() for c in cab_raw.split(',', 1)]
             else:
@@ -173,18 +172,17 @@ for i, secao in enumerate(st.session_state.secoes):
             
             html_tabela = ""
             if cab_tab or linhas_raw:
-                # Adicionado estilo inline para linhas de grade (borders) garantindo visualização limpa
                 html_tabela += '\n    <div class="table-container">\n        <table style="width:100%; border-collapse: collapse; border: 1px solid #ddd;">'
                 if cab_tab:
-                    html_tabela += '\n            <thead>\n                <tr style="background-color: #f2f2f2;">'
+                    # Cabeçalho com fundo #5c4a76 e texto branco para legibilidade
+                    html_tabela += '\n            <thead>\n                <tr style="background-color: #5c4a76; color: #ffffff;">'
                     for th in cab_tab:
-                        html_tabela += f'\n                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">{th}</th>'
+                        html_tabela += f'\n                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left; color: #ffffff;">{th}</th>'
                     html_tabela += '\n                </tr>\n            </thead>'
                 
                 html_tabela += '\n            <tbody>'
                 for l in linhas_raw:
                     if l.strip():
-                        # Divide a linha baseando-se apenas na PRIMEIRA vírgula para evitar quebras indesejadas com textos longos
                         if ',' in l:
                             colunas = [c.strip() for c in l.split(',', 1)]
                         else:
@@ -228,10 +226,10 @@ html_gerado = f"""<!DOCTYPE html>
     <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/Header.css">
     <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/footer.css">
     <style>
-        /* Estilos adicionais para linhas de grade nas tabelas */
+        /* Estilos de grade e cabeçalho com a cor #5c4a76 */
         table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
         th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
-        th {{ background-color: rgba(255,255,255,0.05); }}
+        th {{ background-color: #5c4a76; color: #ffffff; }}
     </style>
 </head>
 <body>
@@ -270,16 +268,7 @@ html_gerado = f"""<!DOCTYPE html>
 </html>"""
 
 st.divider()
-if st.button("🚀 Gerar Código e Baixar/Visualizar PDF", type="primary", use_container_width=True):
+if st.button("🚀 Gerar Código HTML", type="primary", use_container_width=True):
     st.success("HTML gerado com sucesso!")
     st.subheader("Código HTML final para cópia:")
     st.code(html_gerado, language="html")
-
-    st.subheader("📄 Geração de PDF")
-    st.write("Como o navegador bloqueava requisições diretas de dados em Blob por restrições de segurança do Streamlit, criamos um botão de visualização limpa otimizado para impressão:")
-    
-    import urllib.parse
-    b64_html = urllib.parse.quote(html_gerado)
-    data_url = f"data:text/html;charset=utf-8,{b64_html}"
-    
-    st.markdown(f'<a href="{data_url}" target="_blank" style="display: inline-block; padding: 0.6rem 1.2rem; background-color: #f63366; color: white; border-radius: 4px; text-decoration: none; font-weight: bold;">🖨️ Abrir Página para Salvar em PDF (Ctrl+P)</a>', unsafe_allow_html=True)
