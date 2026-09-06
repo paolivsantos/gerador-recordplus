@@ -162,12 +162,13 @@ if st.button("🚀 Gerar HTML Completo"):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <title>RecordPlus | Vídeos, rádios, podcasts para você curtir como quiser.</title>
-    <link id="icon" rel="icon" type="image/png" href="https://www.recordplus.com/content/images/faviconrecordplus.ico">
-    <link href="https://www.recordplus.com/content/all.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://www.recordplus.com/content/theme.css">
-    <link rel="stylesheet" href="https://www.recordplus.com/content/styles.css">
-    <link rel="stylesheet" href="https://www.recordplus.com/content/help.css">
-    <link rel="stylesheet" href="https://www.recordplus.com/content/Header.css">
+    <link id="icon" rel="icon" type="image/png" href="http://media.r7.com/r7/media/recordplus/images/faviconrecordplus.ico">
+    <link href="http://media.r7.com/r7/media/recordplus/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/theme.css">
+    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/styles.css">
+    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/help.css">
+    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/Header.css">
+    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/footer.css">
 </head>
 <body>
     <div id="modal_container"></div>
@@ -176,7 +177,7 @@ if st.button("🚀 Gerar HTML Completo"):
     <div class="header">
         <div class="menu-left-wrapper">
             <a href="https://www.recordplus.com/">
-                <img alt="Play PLUS" class="img-header" src="https://www.recordplus.com/content/images/im_logo_recordplus.png">
+                <img alt="Play PLUS" class="img-header" src="http://media.r7.com/r7/media/recordplus/images/im_logo_recordplus.png">
             </a>
         </div>
         <div class="buutton-login-wrapper">
