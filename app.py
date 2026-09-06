@@ -11,7 +11,7 @@ st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas e tabelas de forma simples.")
 
 # ---------------------------------------------------------
-# FUNÇÃO DE CONVERSÃO COM SUPORTE A SUB-LISTAS
+# FUNÇÃO DE CONVERSÃO DE TEXTO (COM SUPORTE A SUB-LISTAS)
 # ---------------------------------------------------------
 def converter_texto_para_html(texto):
     if not texto:
@@ -19,24 +19,20 @@ def converter_texto_para_html(texto):
     
     linhas = texto.split('\n')
     html_linhas = []
-    nivel_lista = 0  # 0: fora, 1: lista principal, 2: sub-lista
+    nivel_lista = 0
 
     for linha in linhas:
-        # Conta espaços à esquerda para identificar sub-níveis (ex: 2 ou 4 espaços)
         espacos_liderantes = len(linha) - len(linha.lstrip(' '))
         linha_strip = linha.strip()
 
-        # Verifica se é item de lista (começa com - ou * seguido de espaço)
         is_item = linha_strip.startswith('- ') or linha_strip.startswith('* ')
 
         if is_item:
             item_texto = linha_strip[2:]
-            # Formatações internas
             item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', item_texto)
             item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
             item_texto = re.sub(r'\*(.*?)\*', r'<i>\1</i>', item_texto)
 
-            # Define se é sub-lista baseado na indentação
             if espacos_liderantes >= 2:
                 if nivel_lista == 1:
                     html_linhas.append('<ul>')
@@ -65,7 +61,6 @@ def converter_texto_para_html(texto):
         if not linha_strip:
             continue
 
-        # Formatações de parágrafo normal
         linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', linha)
         linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha_fmt)
         linha_fmt = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha_fmt)
@@ -81,7 +76,7 @@ def converter_texto_para_html(texto):
     return '\n'.join(html_linhas)
 
 # ---------------------------------------------------------
-# BARRA LATERAL (FIXA: CONFIGURAÇÕES, GUIA E BOTÕES DE AÇÃO)
+# BARRA LATERAL (FIXA: CONFIGURAÇÕES, GUIA E BOTÕES)
 # ---------------------------------------------------------
 with st.sidebar:
     st.header("Configurações")
@@ -100,16 +95,14 @@ with st.sidebar:
         * **Negrito**: `**texto**`
         * **Itálico**: `*texto*`
         * **Links**: `[Texto](https://url.com)`
-        * **Listas**: Inicie com `- ` ou `* ` (**com espaço** após o símbolo).
-        * **Sub-listas**: Dê 2 espaços antes do `- ` ou `* `.
-        * **Tabelas**: Cabeçalho por vírgula e linhas abaixo.
+        * **Listas**: Inicie com `- ` ou `* ` (**com espaço**).
+        * **Sub-listas**: 2 espaços antes do `- ` ou `* `.
+        * **Tabelas**: Separe colunas por vírgula (a 1ª vírgula divide as colunas) ou use pipe `|`.
         """)
 
-# Inicializa estado das seções
 if 'secoes' not in st.session_state:
     st.session_state.secoes = []
 
-# Processa cliques dos botões da barra lateral
 if add_texto_sidebar:
     st.session_state.secoes.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
     st.rerun()
@@ -119,7 +112,7 @@ if add_tabela_sidebar:
     st.rerun()
 
 # ---------------------------------------------------------
-# CONTEÚDO PRINCIPAL (ÁREA DE EDIÇÃO)
+# CONTEÚDO PRINCIPAL
 # ---------------------------------------------------------
 st.subheader("Conteúdo e Seções da Página")
 
@@ -138,7 +131,7 @@ for i, secao in enumerate(st.session_state.secoes):
             col1, col2 = st.columns([4, 1])
             with col1:
                 st.session_state.secoes[i]['titulo'] = st.text_input(f"Título da Seção {num_secao}", value=secao['titulo'], key=f"tit_{i}")
-                st.session_state.secoes[i]['conteudo'] = st.text_area(f"Conteúdo (Aceita formatações e sub-listas com recuo)", value=secao['conteudo'], key=f"cont_{i}", height=120)
+                st.session_state.secoes[i]['conteudo'] = st.text_area(f"Conteúdo", value=secao['conteudo'], key=f"cont_{i}", height=120)
             with col2:
                 st.write("")
                 st.write("")
@@ -160,7 +153,7 @@ for i, secao in enumerate(st.session_state.secoes):
             with col1:
                 st.session_state.secoes[i]['titulo'] = st.text_input(f"Título da Tabela {num_secao}", value=secao['titulo'], key=f"ttab_{i}")
                 st.session_state.secoes[i]['cabecalho'] = st.text_input(f"Cabeçalho da Tabela (separado por vírgula)", value=secao.get('cabecalho', ''), key=f"cab_{i}")
-                st.session_state.secoes[i]['linhas'] = st.text_area(f"Linhas da Tabela (cada linha em uma quebra, colunas separadas por vírgula)", value=secao.get('linhas', ''), key=f"lin_{i}", height=100)
+                st.session_state.secoes[i]['linhas'] = st.text_area(f"Linhas da Tabela (cada linha em uma quebra)", value=secao.get('linhas', ''), key=f"lin_{i}", height=100)
             with col2:
                 st.write("")
                 st.write("")
@@ -169,28 +162,37 @@ for i, secao in enumerate(st.session_state.secoes):
                     st.rerun()
             
             t_tab = st.session_state.secoes[i]['titulo']
-            cab_tab = [c.strip() for c in st.session_state.secoes[i]['cabecalho'].split(',')] if st.session_state.secoes[i]['cabecalho'] else []
+            cab_raw = st.session_state.secoes[i]['cabecalho']
+            # Divide o cabeçalho considerando apenas a primeira vírgula (ou split padrão se preferir, aqui limitamos a 2 colunas se houver múltiplas vírgulas, ou tratamos via maxsplit=1)
+            if ',' in cab_raw and cab_raw.count(',') > 1:
+                cab_tab = [c.strip() for c in cab_raw.split(',', 1)]
+            else:
+                cab_tab = [c.strip() for c in cab_raw.split(',')] if cab_raw else []
+
             linhas_raw = st.session_state.secoes[i]['linhas'].split('\n') if st.session_state.secoes[i]['linhas'] else []
             
             html_tabela = ""
             if cab_tab or linhas_raw:
-                html_tabela += '\n    <div class="table-container">\n        <table>'
+                # Adicionado estilo inline para linhas de grade (borders) garantindo visualização limpa
+                html_tabela += '\n    <div class="table-container">\n        <table style="width:100%; border-collapse: collapse; border: 1px solid #ddd;">'
                 if cab_tab:
-                    html_tabela += '\n            <thead>\n                <tr>'
+                    html_tabela += '\n            <thead>\n                <tr style="background-color: #f2f2f2;">'
                     for th in cab_tab:
-                        html_tabela += f'\n                    <th>{th}</th>'
+                        html_tabela += f'\n                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">{th}</th>'
                     html_tabela += '\n                </tr>\n            </thead>'
                 
                 html_tabela += '\n            <tbody>'
                 for l in linhas_raw:
                     if l.strip():
-                        colunas = [col.strip() for col in l.split(',')]
+                        # Divide a linha baseando-se apenas na PRIMEIRA vírgula para evitar quebras indesejadas com textos longos
+                        if ',' in l:
+                            colunas = [c.strip() for c in l.split(',', 1)]
+                        else:
+                            colunas = [l.strip()]
+
                         html_tabela += '\n                <tr>'
                         for idx, td in enumerate(colunas):
-                            if idx == 0:
-                                html_tabela += f'\n                    <td class="cookie-type">{td}</td>'
-                            else:
-                                html_tabela += f'\n                    <td class="cookie-description">{td}</td>'
+                            html_tabela += f'\n                    <td style="border: 1px solid #ddd; padding: 8px;">{td}</td>'
                         html_tabela += '\n                </tr>'
                 html_tabela += '\n            </tbody>\n        </table>\n    </div>\n'
 
@@ -198,7 +200,6 @@ for i, secao in enumerate(st.session_state.secoes):
                 html_secoes_geradas += f"\n    <h3>{t_tab}</h3>"
             html_secoes_geradas += html_tabela
 
-# Botões inferiores para adicionar seção sem precisar subir a página
 st.divider()
 col_bot1, col_bot2 = st.columns(2)
 with col_bot1:
@@ -226,6 +227,12 @@ html_gerado = f"""<!DOCTYPE html>
     <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/help.css">
     <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/Header.css">
     <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/footer.css">
+    <style>
+        /* Estilos adicionais para linhas de grade nas tabelas */
+        table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
+        th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
+        th {{ background-color: rgba(255,255,255,0.05); }}
+    </style>
 </head>
 <body>
     <div id="modal_container"></div>
@@ -263,19 +270,16 @@ html_gerado = f"""<!DOCTYPE html>
 </html>"""
 
 st.divider()
-if st.button("🚀 Gerar Código e Opção de PDF", type="primary", use_container_width=True):
+if st.button("🚀 Gerar Código e Baixar/Visualizar PDF", type="primary", use_container_width=True):
     st.success("HTML gerado com sucesso!")
     st.subheader("Código HTML final para cópia:")
     st.code(html_gerado, language="html")
 
-    # PLUS: Opção para exportar PDF utilizando componentes de impressão do navegador via st.markdown / HTML embutido
-    st.subheader("📄 Visualização e Exportação para PDF")
-    st.write("Para salvar como PDF, clique no botão abaixo para abrir a página gerada em uma nova aba e utilize o comando de impressão do seu navegador (`Ctrl+P` / `Cmd+P` -> Salvar como PDF):")
+    st.subheader("📄 Geração de PDF")
+    st.write("Como o navegador bloqueava requisições diretas de dados em Blob por restrições de segurança do Streamlit, criamos um botão de visualização limpa otimizado para impressão:")
     
-    # Cria um data URI para visualização rápida do HTML gerado
     import urllib.parse
-    html_bytes = html_gerado.encode("utf-8")
     b64_html = urllib.parse.quote(html_gerado)
     data_url = f"data:text/html;charset=utf-8,{b64_html}"
     
-    st.markdown(f'<a href="{data_url}" target="_blank" style="padding: 0.5rem 1rem; background-color: #f63366; color: white; border-radius: 4px; text-decoration: none; font-weight: bold;">🔗 Abrir Página em Nova Aba para Salvar em PDF</a>', unsafe_allow_html=True)
+    st.markdown(f'<a href="{data_url}" target="_blank" style="display: inline-block; padding: 0.6rem 1.2rem; background-color: #f63366; color: white; border-radius: 4px; text-decoration: none; font-weight: bold;">🖨️ Abrir Página para Salvar em PDF (Ctrl+P)</a>', unsafe_allow_html=True)
