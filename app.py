@@ -11,16 +11,16 @@ st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas e tabelas de forma simples.")
 
 # ---------------------------------------------------------
-# LEGENDA DE FORMATAÇÃO (AJUDA RÁPIDA)
+# LEGENDA DE FORMATAÇÃO (EXPANDIDA POR PADRÃO)
 # ---------------------------------------------------------
-with st.expander("💡 Guia Rápido de Formatação (Clique para abrir)"):
+with st.expander("💡 Guia Rápido de Formatação", expanded=True):
     st.markdown("""
     Você pode usar formatações simples nos campos de texto para estilizar o conteúdo:
     * **Negrito**: Use `**palavra ou frase**` (Ex: `O **RecordPlus** é seguro`)
     * **Itálico**: Use `*palavra ou frase*` (Ex: `*Atenção aos prazos*`)
     * **Links**: Use `[Texto do Link](https://exemplo.com)`
     * **Listas**: Inicie as linhas com `-` ou `*` para criar itens em lista.
-    * **Tabelas**: Insira uma tabela informando o cabeçalho separado por vírgulas e as linhas logo abaixo.
+    * **Tabelas**: Insira o cabeçalho separado por vírgulas e as linhas logo abaixo (cada linha em uma quebra).
     """)
 
 # Função para converter Markdown básico e listas em HTML
@@ -33,7 +33,6 @@ def converter_texto_para_html(texto):
     dentro_de_lista = False
 
     for linha in linhas:
-        linha_original = linha
         linha_strip = linha.strip()
 
         # Verifica se é item de lista (começa com - ou *)
@@ -75,17 +74,11 @@ with st.sidebar:
     st.header("Configurações da Página")
     titulo_principal = st.text_input("Título Principal da Página", "Aviso de Privacidade RecordPlus")
 
-# Gerenciamento dinâmico de seções
-st.subheader("Conteúdo e Seções da Página")
-
+# Gerenciamento dinâmico de seções (inicia limpo ou com um padrão controlado)
 if 'secoes' not in st.session_state:
-    st.session_state.secoes = [
-        {
-            'tipo': 'Texto / Parágrafos / Lista', 
-            'titulo': 'Atualizações', 
-            'conteudo': 'O RecordPlus leva a sério a privacidade...\n- Item da lista 1\n- Item da lista 2'
-        }
-    ]
+    st.session_state.secoes = []
+
+st.subheader("Conteúdo e Seções da Página")
 
 # Botões para adicionar novos blocos
 col_b1, col_b2 = st.columns(2)
@@ -94,9 +87,13 @@ with col_b1:
         st.session_state.secoes.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
 with col_b2:
     if st.button("📊 Adicionar Tabela"):
-        st.session_state.secoes.append({'tipo': 'tabela', 'titulo': 'Tabela Explicativa', 'cabecalho': 'Tipo, Descrição', 'linhas': 'Necessários, Cookies essenciais para o site\nDesempenho, Cookies que ajudam a entender interações'})
+        st.session_state.secoes.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
 
 html_secoes_geradas = ""
+
+# Se não houver seções, avisa o usuário
+if not st.session_state.secoes:
+    st.info("Nenhuma seção adicionada ainda. Clique nos botões acima para começar a montar a página.")
 
 # Renderiza e processa cada seção de acordo com o tipo
 for i, secao in enumerate(st.session_state.secoes):
