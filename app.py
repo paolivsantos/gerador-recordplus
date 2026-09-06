@@ -10,80 +10,123 @@ st.set_page_config(
 st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas e tabelas de forma simples.")
 
-# Guia de Formatação
-with st.expander("💡 Guia Rápido de Formatação", expanded=True):
-    st.markdown("""
-    Você pode usar formatações simples nos campos de texto para estilizar o conteúdo:
-    * **Negrito**: Use `**palavra ou frase**` (Ex: `O **RecordPlus** é seguro`)
-    * **Itálico**: Use `*palavra ou frase*` (Ex: `*Atenção aos prazos*`)
-    * **Links**: Use `[Texto do Link](https://exemplo.com)`
-    * **Listas**: Inicie as linhas com `-` ou `*` para criar itens em lista.
-    * **Tabelas**: Insira o cabeçalho separado por vírgulas e as linhas logo abaixo.
-    """)
-
+# ---------------------------------------------------------
+# FUNÇÃO DE CONVERSÃO COM SUPORTE A SUB-LISTAS
+# ---------------------------------------------------------
 def converter_texto_para_html(texto):
     if not texto:
         return ""
     
     linhas = texto.split('\n')
     html_linhas = []
-    dentro_de_lista = False
+    nivel_lista = 0  # 0: fora, 1: lista principal, 2: sub-lista
 
     for linha in linhas:
+        # Conta espaços à esquerda para identificar sub-níveis (ex: 2 ou 4 espaços)
+        espacos_liderantes = len(linha) - len(linha.lstrip(' '))
         linha_strip = linha.strip()
 
-        if linha_strip.startswith('- ') or linha_strip.startswith('* '):
-            if not dentro_de_lista:
-                html_linhas.append('<ul>')
-                dentro_de_lista = True
-            
+        # Verifica se é item de lista (começa com - ou * seguido de espaço)
+        is_item = linha_strip.startswith('- ') or linha_strip.startswith('* ')
+
+        if is_item:
             item_texto = linha_strip[2:]
+            # Formatações internas
             item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', item_texto)
             item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
             item_texto = re.sub(r'\*(.*?)\*', r'<i>\1</i>', item_texto)
-            
-            html_linhas.append(f'    <li>{item_texto}</li>')
+
+            # Define se é sub-lista baseado na indentação
+            if espacos_liderantes >= 2:
+                if nivel_lista == 1:
+                    html_linhas.append('<ul>')
+                    nivel_lista = 2
+                elif nivel_lista == 0:
+                    html_linhas.append('<ul><ul>')
+                    nivel_lista = 2
+                html_linhas.append(f'    <li>{item_texto}</li>')
+            else:
+                if nivel_lista == 2:
+                    html_linhas.append('</ul></ul>')
+                    nivel_lista = 1
+                elif nivel_lista == 0:
+                    html_linhas.append('<ul>')
+                    nivel_lista = 1
+                html_linhas.append(f'    <li>{item_texto}</li>')
             continue
         else:
-            if dentro_de_lista:
-                html_linhas.append('</ul>')
-                dentro_de_lista = False
+            if nivel_lista > 0:
+                if nivel_lista == 2:
+                    html_linhas.append('</ul></ul>')
+                else:
+                    html_linhas.append('</ul>')
+                nivel_lista = 0
 
         if not linha_strip:
             continue
 
-        linha = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', linha)
-        linha = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha)
-        linha = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha)
+        # Formatações de parágrafo normal
+        linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', linha)
+        linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha_fmt)
+        linha_fmt = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha_fmt)
         
-        html_linhas.append(f'<p>{linha}</p>')
+        html_linhas.append(f'<p>{linha_fmt}</p>')
 
-    if dentro_de_lista:
-        html_linhas.append('</ul>')
+    if nivel_lista > 0:
+        if nivel_lista == 2:
+            html_linhas.append('</ul></ul>')
+        else:
+            html_linhas.append('</ul>')
 
     return '\n'.join(html_linhas)
 
+# ---------------------------------------------------------
+# BARRA LATERAL (FIXA: CONFIGURAÇÕES, GUIA E BOTÕES DE AÇÃO)
+# ---------------------------------------------------------
 with st.sidebar:
-    st.header("Configurações da Página")
+    st.header("Configurações")
     titulo_principal = st.text_input("Título Principal da Página", "Aviso de Privacidade RecordPlus")
+    
+    st.divider()
+    
+    st.subheader("➕ Adicionar Seções")
+    add_texto_sidebar = st.button("Adicionar Texto/Lista", use_container_width=True)
+    add_tabela_sidebar = st.button("Adicionar Tabela", use_container_width=True)
 
+    st.divider()
+
+    with st.expander("💡 Guia Rápido de Formatação", expanded=True):
+        st.markdown("""
+        * **Negrito**: `**texto**`
+        * **Itálico**: `*texto*`
+        * **Links**: `[Texto](https://url.com)`
+        * **Listas**: Inicie com `- ` ou `* ` (**com espaço** após o símbolo).
+        * **Sub-listas**: Dê 2 espaços antes do `- ` ou `* `.
+        * **Tabelas**: Cabeçalho por vírgula e linhas abaixo.
+        """)
+
+# Inicializa estado das seções
 if 'secoes' not in st.session_state:
     st.session_state.secoes = []
 
+# Processa cliques dos botões da barra lateral
+if add_texto_sidebar:
+    st.session_state.secoes.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
+    st.rerun()
+
+if add_tabela_sidebar:
+    st.session_state.secoes.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
+    st.rerun()
+
+# ---------------------------------------------------------
+# CONTEÚDO PRINCIPAL (ÁREA DE EDIÇÃO)
+# ---------------------------------------------------------
 st.subheader("Conteúdo e Seções da Página")
 
-col_b1, col_b2 = st.columns(2)
-with col_b1:
-    if st.button("➕ Adicionar Seção de Texto/Lista"):
-        st.session_state.secoes.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
-with col_b2:
-    if st.button("📊 Adicionar Tabela"):
-        st.session_state.secoes.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
+if not st.session_state.secoes:
+    st.info("Nenhuma seção adicionada ainda. Use os botões na barra lateral para começar.")
 
 html_secoes_geradas = ""
-
-if not st.session_state.secoes:
-    st.info("Nenhuma seção adicionada ainda. Clique nos botões acima para começar a montar a página.")
 
 for i, secao in enumerate(st.session_state.secoes):
     tipo_atual = secao.get('tipo', 'texto')
@@ -95,7 +138,7 @@ for i, secao in enumerate(st.session_state.secoes):
             col1, col2 = st.columns([4, 1])
             with col1:
                 st.session_state.secoes[i]['titulo'] = st.text_input(f"Título da Seção {num_secao}", value=secao['titulo'], key=f"tit_{i}")
-                st.session_state.secoes[i]['conteudo'] = st.text_area(f"Conteúdo (Aceita **negrito**, *itálico*, links e listas com -)", value=secao['conteudo'], key=f"cont_{i}", height=120)
+                st.session_state.secoes[i]['conteudo'] = st.text_area(f"Conteúdo (Aceita formatações e sub-listas com recuo)", value=secao['conteudo'], key=f"cont_{i}", height=120)
             with col2:
                 st.write("")
                 st.write("")
@@ -155,8 +198,22 @@ for i, secao in enumerate(st.session_state.secoes):
                 html_secoes_geradas += f"\n    <h3>{t_tab}</h3>"
             html_secoes_geradas += html_tabela
 
-if st.button("🚀 Gerar HTML Completo"):
-    html_gerado = f"""<!DOCTYPE html>
+# Botões inferiores para adicionar seção sem precisar subir a página
+st.divider()
+col_bot1, col_bot2 = st.columns(2)
+with col_bot1:
+    if st.button("➕ Adicionar Seção de Texto/Lista (Inferior)", use_container_width=True):
+        st.session_state.secoes.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
+        st.rerun()
+with col_bot2:
+    if st.button("📊 Adicionar Tabela (Inferior)", use_container_width=True):
+        st.session_state.secoes.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
+        st.rerun()
+
+# ---------------------------------------------------------
+# MONTAGEM DO HTML COMPLETO
+# ---------------------------------------------------------
+html_gerado = f"""<!DOCTYPE html>
 <html data-theme="dark" lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -205,6 +262,20 @@ if st.button("🚀 Gerar HTML Completo"):
 </body>
 </html>"""
 
+st.divider()
+if st.button("🚀 Gerar Código e Opção de PDF", type="primary", use_container_width=True):
     st.success("HTML gerado com sucesso!")
     st.subheader("Código HTML final para cópia:")
     st.code(html_gerado, language="html")
+
+    # PLUS: Opção para exportar PDF utilizando componentes de impressão do navegador via st.markdown / HTML embutido
+    st.subheader("📄 Visualização e Exportação para PDF")
+    st.write("Para salvar como PDF, clique no botão abaixo para abrir a página gerada em uma nova aba e utilize o comando de impressão do seu navegador (`Ctrl+P` / `Cmd+P` -> Salvar como PDF):")
+    
+    # Cria um data URI para visualização rápida do HTML gerado
+    import urllib.parse
+    html_bytes = html_gerado.encode("utf-8")
+    b64_html = urllib.parse.quote(html_gerado)
+    data_url = f"data:text/html;charset=utf-8,{b64_html}"
+    
+    st.markdown(f'<a href="{data_url}" target="_blank" style="padding: 0.5rem 1rem; background-color: #f63366; color: white; border-radius: 4px; text-decoration: none; font-weight: bold;">🔗 Abrir Página em Nova Aba para Salvar em PDF</a>', unsafe_allow_html=True)
