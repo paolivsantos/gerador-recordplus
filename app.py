@@ -12,6 +12,18 @@ st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas e tabelas de forma simples.")
 
 # ---------------------------------------------------------
+# CONVERSÃO REVERSA SIMPLIFICADA (EXIBE LINKS COMO [TEXTO](URL))
+# ---------------------------------------------------------
+def html_para_markdown(html_fragmento):
+    if not html_fragmento:
+        return ""
+    
+    # Converte tags <a> para o formato [texto](url)
+    texto = re.sub(r'<a\s+[^>]*href=["\'](.*?)["\'][^>]*>(.*?)</a>', r'[\2](\1)', html_fragmento, flags=re.IGNORECASE)
+    
+    return texto.strip()
+
+# ---------------------------------------------------------
 # PARSER PARA IMPORTAR HTML EXISTENTE
 # ---------------------------------------------------------
 class HTMLSecaoParser(HTMLParser):
@@ -21,11 +33,11 @@ class HTMLSecaoParser(HTMLParser):
         self.secoes = []
         self._current_tag = None
         self._current_data = []
-        self._ativo_container = False
         self._titulo_secao_atual = ""
         self._conteudo_secao_atual = []
         self._em_h1 = False
         self._em_h3 = False
+        self._nivel_ul = 0
 
     def handle_starttag(self, tag, attrs):
         self._current_tag = tag
@@ -33,7 +45,6 @@ class HTMLSecaoParser(HTMLParser):
             self._em_h1 = True
         elif tag == 'h3':
             self._em_h3 = True
-            # Se já tínhamos conteúdo acumulado numa seção anterior, salva ela
             if self._titulo_secao_atual or self._conteudo_secao_atual:
                 self.secoes.append({
                     'tipo': 'texto',
@@ -42,6 +53,8 @@ class HTMLSecaoParser(HTMLParser):
                 })
                 self._titulo_secao_atual = ""
                 self._conteudo_secao_atual = []
+        elif tag == 'ul':
+            self._nivel_ul += 1
 
     def handle_endtag(self, tag):
         if tag == 'h1':
@@ -50,27 +63,28 @@ class HTMLSecaoParser(HTMLParser):
             self._em_h3 = False
             self._titulo_secao_atual = "".join(self._current_data).strip()
             self._current_data = []
-        elif tag == 'p' and self._em_h3 == False and self._em_h1 == False:
-            texto_p = "".join(self._current_data).strip()
-            if texto_p:
-                self._conteudo_secao_atual.append(texto_p)
+        elif tag == 'p' and not self._em_h3 and not self._em_h1:
+            fragmento = "".join(self._current_data).strip()
+            if fragmento:
+                self._conteudo_secao_atual.append(html_para_markdown(fragmento))
             self._current_data = []
         elif tag == 'li':
-            texto_li = "".join(self._current_data).strip()
-            if texto_li:
-                self._conteudo_secao_atual.append(f"- {texto_li}")
+            fragmento = "".join(self._current_data).strip()
+            if fragmento:
+                md_convertido = html_para_markdown(fragmento)
+                prefixo = "  - " if self._nivel_ul > 1 else "- "
+                self._conteudo_secao_atual.append(f"{prefixo}{md_convertido}")
             self._current_data = []
+        elif tag == 'ul':
+            self._nivel_ul = max(0, self._nivel_ul - 1)
         self._current_tag = None
 
     def handle_data(self, data):
-        dados = data.strip()
-        if not dados:
+        if not data:
             return
         if self._em_h1:
             self.titulo_principal += data
-        elif self._em_h3:
-            self._current_data.append(data)
-        elif self._current_tag in ['p', 'li', 'td']:
+        else:
             self._current_data.append(data)
 
     def fechar(self):
@@ -91,7 +105,7 @@ def importar_html_para_estado(html_str):
     return titulo, secoes
 
 # ---------------------------------------------------------
-# FUNÇÃO DE CONVERSÃO DE TEXTO (COM SUPORTE A SUB-LISTAS)
+# FUNÇÃO DE CONVERSÃO DE TEXTO (MARKDOWN -> HTML)
 # ---------------------------------------------------------
 def converter_texto_para_html(texto):
     if not texto:
@@ -109,10 +123,8 @@ def converter_texto_para_html(texto):
 
         if is_item:
             item_texto = linha_strip[2:]
+            # Converte [Texto](URL) digitado no editor de volta para tag <a href>
             item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', item_texto)
-            item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
-            item_texto = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', item_texto)
-            item_texto = re.sub(r'\*(.*?)\*', r'<i>\1</i>', item_texto)
 
             if espacos_liderantes >= 2:
                 if nivel_lista == 1:
@@ -143,10 +155,6 @@ def converter_texto_para_html(texto):
             continue
 
         linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', linha)
-        linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha_fmt)
-        linha_fmt = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', linha_fmt)
-        linha_fmt = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha_fmt)
-        
         html_linhas.append(f'<p>{linha_fmt}</p>')
 
     if nivel_lista > 0:
@@ -198,7 +206,7 @@ with st.sidebar:
                 st.session_state.rascunhos[tipo_pagina]["titulo"] = novo_tit
                 if novas_sec:
                     st.session_state.rascunhos[tipo_pagina]["secoes"] = novas_sec
-                st.success("HTML importado com sucesso!")
+                st.success("HTML importado e convertido com sucesso!")
                 st.rerun()
             else:
                 st.warning("Cole o HTML no campo acima.")
@@ -213,9 +221,6 @@ with st.sidebar:
 
     with st.expander("💡 Guia Rápido de Formatação", expanded=True):
         st.markdown("""
-        * **Negrito**: `**texto**`
-        * **Itálico**: `*texto*`
-        * **Sublinhado**: `_texto_`
         * **Links**: `[Texto](https://url.com)`
         * **Listas**: Inicie com `- ` ou `* ` (**com espaço**).
         * **Sub-listas**: 2 espaços antes do `- ` ou `* `.
