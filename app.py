@@ -242,7 +242,7 @@ html_gerado = f"""<!DOCTYPE html>
         </div>
         <div class="buutton-login-wrapper">
             <p>Já possui conta?</p>
-            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" style="position: relative; z-index: 9999; pointer-events: auto; cursor: pointer;">
+            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" target="_blank" rel="noopener noreferrer" style="position: relative; z-index: 9999; pointer-events: auto; cursor: pointer;">
                 Acesse
             </a>
         </div>
