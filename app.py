@@ -228,18 +228,23 @@ html_gerado = f"""<!DOCTYPE html>
         table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
         th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
         th {{ background-color: #5c4a76; color: #ffffff; }}
-        /* Força máxima de clique no botão de login */
-        .buutton-login-wrapper a {{
+        
+        /* Blindagem total de eventos e sobreposições */
+        .buutton-login-wrapper {{
+            position: relative !important;
+            z-index: 999999 !important;
+        }}
+        .buutton-login-wrapper a.main-button-transparent {{
             pointer-events: auto !important;
             cursor: pointer !important;
             position: relative !important;
-            z-index: 2147483647 !important;
+            z-index: 1000000 !important;
         }}
     </style>
 </head>
 <body>
     <div id="modal_container"></div>
-    <div class="menu-overlay"></div>
+    <div class="menu-overlay" style="pointer-events: none !important;"></div>
     
     <div class="header">
         <div class="menu-left-wrapper">
@@ -249,7 +254,7 @@ html_gerado = f"""<!DOCTYPE html>
         </div>
         <div class="buutton-login-wrapper">
             <p>Já possui conta?</p>
-            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" onclick="window.open('https://www.recordplus.com/account/login', '_blank'); return false;">
+            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" target="_blank" rel="noopener noreferrer">
                 Acesse
             </a>
         </div>
