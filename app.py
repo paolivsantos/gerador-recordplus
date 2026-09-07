@@ -174,7 +174,6 @@ for i, secao in enumerate(st.session_state.secoes):
             if cab_tab or linhas_raw:
                 html_tabela += '\n    <div class="table-container">\n        <table style="width:100%; border-collapse: collapse; border: 1px solid #ddd;">'
                 if cab_tab:
-                    # Cabeçalho com fundo #5c4a76 e texto branco para legibilidade
                     html_tabela += '\n            <thead>\n                <tr style="background-color: #5c4a76; color: #ffffff;">'
                     for th in cab_tab:
                         html_tabela += f'\n                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left; color: #ffffff;">{th}</th>'
@@ -226,7 +225,6 @@ html_gerado = f"""<!DOCTYPE html>
     <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/Header.css">
     <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/footer.css">
     <style>
-        /* Estilos de grade e cabeçalho com a cor #5c4a76 */
         table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
         th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
         th {{ background-color: #5c4a76; color: #ffffff; }}
@@ -244,7 +242,7 @@ html_gerado = f"""<!DOCTYPE html>
         </div>
         <div class="buutton-login-wrapper">
             <p>Já possui conta?</p>
-            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login">
+            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" style="position: relative; z-index: 9999; pointer-events: auto; cursor: pointer;">
                 Acesse
             </a>
         </div>
@@ -259,8 +257,8 @@ html_gerado = f"""<!DOCTYPE html>
     <footer data-theme="light">
         <div class="bottom-footer">
             <ul class="list-footer">
-                <li><a href="https://descubra.recordplus.com/termosdeuso">Termos de Uso </a><span>|</span></li>
-                <li><a href="https://descubra.recordplus.com/politica/">Privacidade</a>  <span>|</span></li>
+                <li><a href="https://www.recordplus.com/help/termosdeuso">Termos de Uso </a><span>|</span></li>
+                <li><a href="https://www.recordplus.com/help/politica">Privacidade</a>  <span>|</span></li>
             </ul>
         </div>
     </footer>
