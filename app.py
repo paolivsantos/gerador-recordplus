@@ -80,7 +80,21 @@ def converter_texto_para_html(texto):
 # ---------------------------------------------------------
 with st.sidebar:
     st.header("Configurações")
-    titulo_principal = st.text_input("Título Principal da Página", "Aviso de Privacidade RecordPlus")
+    
+    tipo_pagina = st.selectbox(
+        "Selecione o Modelo de Página",
+        ["Aviso de Privacidade", "Termos de Uso", "Contrato de Assinatura"]
+    )
+    
+    # Define o título padrão com base na seleção
+    if tipo_pagina == "Aviso de Privacidade":
+        titulo_default = "Aviso de Privacidade RecordPlus"
+    elif tipo_pagina == "Termos de Uso":
+        titulo_default = "Termos de Uso RecordPlus"
+    else:
+        titulo_default = "Contrato de Assinatura RecordPlus"
+
+    titulo_principal = st.text_input("Título Principal da Página", value=titulo_default)
     
     st.divider()
     
