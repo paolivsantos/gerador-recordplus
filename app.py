@@ -228,6 +228,13 @@ html_gerado = f"""<!DOCTYPE html>
         table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
         th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
         th {{ background-color: #5c4a76; color: #ffffff; }}
+        /* Força máxima de clique no botão de login */
+        .buutton-login-wrapper a {{
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative !important;
+            z-index: 2147483647 !important;
+        }}
     </style>
 </head>
 <body>
@@ -242,7 +249,7 @@ html_gerado = f"""<!DOCTYPE html>
         </div>
         <div class="buutton-login-wrapper">
             <p>Já possui conta?</p>
-            <a id="btn-login-acessar" class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" style="position: relative; z-index: 9999; pointer-events: auto; cursor: pointer;">
+            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" onclick="window.open('https://www.recordplus.com/account/login', '_blank'); return false;">
                 Acesse
             </a>
         </div>
@@ -262,14 +269,6 @@ html_gerado = f"""<!DOCTYPE html>
             </ul>
         </div>
     </footer>
-
-    <script>
-        // Garante a abertura em nova aba forçada via script para evitar bloqueios de iframe/embed
-        document.getElementById('btn-login-acessar').addEventListener('click', function(event) {{
-            event.preventDefault();
-            window.open(this.href, '_blank');
-        }});
-    </script>
 </body>
 </html>"""
 
