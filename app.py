@@ -1,5 +1,6 @@
 import streamlit as st
 import re
+from html.parser import HTMLParser
 
 st.set_page_config(
     page_title="Gerador de HTML - RecordPlus",
@@ -9,6 +10,85 @@ st.set_page_config(
 
 st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas e tabelas de forma simples.")
+
+# ---------------------------------------------------------
+# PARSER PARA IMPORTAR HTML EXISTENTE
+# ---------------------------------------------------------
+class HTMLSecaoParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.titulo_principal = ""
+        self.secoes = []
+        self._current_tag = None
+        self._current_data = []
+        self._ativo_container = False
+        self._titulo_secao_atual = ""
+        self._conteudo_secao_atual = []
+        self._em_h1 = False
+        self._em_h3 = False
+
+    def handle_starttag(self, tag, attrs):
+        self._current_tag = tag
+        if tag == 'h1':
+            self._em_h1 = True
+        elif tag == 'h3':
+            self._em_h3 = True
+            # Se já tínhamos conteúdo acumulado numa seção anterior, salva ela
+            if self._titulo_secao_atual or self._conteudo_secao_atual:
+                self.secoes.append({
+                    'tipo': 'texto',
+                    'titulo': self._titulo_secao_atual,
+                    'conteudo': '\n'.join(self._conteudo_secao_atual).strip()
+                })
+                self._titulo_secao_atual = ""
+                self._conteudo_secao_atual = []
+
+    def handle_endtag(self, tag):
+        if tag == 'h1':
+            self._em_h1 = False
+        elif tag == 'h3':
+            self._em_h3 = False
+            self._titulo_secao_atual = "".join(self._current_data).strip()
+            self._current_data = []
+        elif tag == 'p' and self._em_h3 == False and self._em_h1 == False:
+            texto_p = "".join(self._current_data).strip()
+            if texto_p:
+                self._conteudo_secao_atual.append(texto_p)
+            self._current_data = []
+        elif tag == 'li':
+            texto_li = "".join(self._current_data).strip()
+            if texto_li:
+                self._conteudo_secao_atual.append(f"- {texto_li}")
+            self._current_data = []
+        self._current_tag = None
+
+    def handle_data(self, data):
+        dados = data.strip()
+        if not dados:
+            return
+        if self._em_h1:
+            self.titulo_principal += data
+        elif self._em_h3:
+            self._current_data.append(data)
+        elif self._current_tag in ['p', 'li', 'td']:
+            self._current_data.append(data)
+
+    def fechar(self):
+        if self._titulo_secao_atual or self._conteudo_secao_atual:
+            self.secoes.append({
+                'tipo': 'texto',
+                'titulo': self._titulo_secao_atual,
+                'conteudo': '\n'.join(self._conteudo_secao_atual).strip()
+            })
+
+def importar_html_para_estado(html_str):
+    parser = HTMLSecaoParser()
+    parser.feed(html_str)
+    parser.fechar()
+    
+    titulo = parser.titulo_principal.strip() if parser.titulo_principal else "Documento RecordPlus"
+    secoes = parser.secoes if parser.secoes else []
+    return titulo, secoes
 
 # ---------------------------------------------------------
 # FUNÇÃO DE CONVERSÃO DE TEXTO (COM SUPORTE A SUB-LISTAS)
@@ -31,7 +111,7 @@ def converter_texto_para_html(texto):
             item_texto = linha_strip[2:]
             item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', item_texto)
             item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
-            item_texto = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', item_texto) # Sublinhado com _texto_
+            item_texto = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', item_texto)
             item_texto = re.sub(r'\*(.*?)\*', r'<i>\1</i>', item_texto)
 
             if espacos_liderantes >= 2:
@@ -64,7 +144,7 @@ def converter_texto_para_html(texto):
 
         linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', linha)
         linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha_fmt)
-        linha_fmt = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', linha_fmt) # Sublinhado com _texto_
+        linha_fmt = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', linha_fmt)
         linha_fmt = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha_fmt)
         
         html_linhas.append(f'<p>{linha_fmt}</p>')
@@ -89,7 +169,6 @@ with st.sidebar:
         key="tipo_pagina_select"
     )
     
-    # Inicializa dicionários de rascunhos independentes por tipo no session_state se não existirem
     if 'rascunhos' not in st.session_state:
         st.session_state.rascunhos = {
             "Aviso de Privacidade": {"titulo": "Aviso de Privacidade RecordPlus", "secoes": []},
@@ -109,6 +188,21 @@ with st.sidebar:
     titulo_principal = st.text_input("Título Principal da Página", value=dados_atuais["titulo"], key=f"tit_principal_{tipo_pagina}")
     st.session_state.rascunhos[tipo_pagina]["titulo"] = titulo_principal
     
+    st.divider()
+    
+    with st.expander("📥 Importar HTML Existente"):
+        html_importado_input = st.text_area("Cole o código HTML anterior aqui", key=f"imp_{tipo_pagina}", height=100)
+        if st.button("Carregar Dados do HTML", key=f"btn_imp_{tipo_pagina}", use_container_width=True):
+            if html_importado_input:
+                novo_tit, novas_sec = importar_html_para_estado(html_importado_input)
+                st.session_state.rascunhos[tipo_pagina]["titulo"] = novo_tit
+                if novas_sec:
+                    st.session_state.rascunhos[tipo_pagina]["secoes"] = novas_sec
+                st.success("HTML importado com sucesso!")
+                st.rerun()
+            else:
+                st.warning("Cole o HTML no campo acima.")
+
     st.divider()
     
     st.subheader("➕ Adicionar Seções")
@@ -144,7 +238,7 @@ if add_tabela_sidebar:
 st.subheader(f"Conteúdo: {tipo_pagina}")
 
 if not secoes_ativas:
-    st.info(f"Nenhuma seção adicionada para **{tipo_pagina}** ainda. Use os botões na barra lateral para começar.")
+    st.info(f"Nenhuma seção adicionada para **{tipo_pagina}** ainda. Use os botões na barra lateral ou importe um HTML existente.")
 
 html_secoes_geradas = ""
 
