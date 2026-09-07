@@ -31,6 +31,7 @@ def converter_texto_para_html(texto):
             item_texto = linha_strip[2:]
             item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', item_texto)
             item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
+            item_texto = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', item_texto) # Sublinhado com _texto_
             item_texto = re.sub(r'\*(.*?)\*', r'<i>\1</i>', item_texto)
 
             if espacos_liderantes >= 2:
@@ -63,6 +64,7 @@ def converter_texto_para_html(texto):
 
         linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', linha)
         linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha_fmt)
+        linha_fmt = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', linha_fmt) # Sublinhado com _texto_
         linha_fmt = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha_fmt)
         
         html_linhas.append(f'<p>{linha_fmt}</p>')
@@ -83,18 +85,29 @@ with st.sidebar:
     
     tipo_pagina = st.selectbox(
         "Selecione o Modelo de Página",
-        ["Aviso de Privacidade", "Termos de Uso", "Contrato de Assinatura"]
+        ["Aviso de Privacidade", "Termos de Uso", "Contrato de Assinatura"],
+        key="tipo_pagina_select"
     )
     
-    # Define o título padrão com base na seleção
-    if tipo_pagina == "Aviso de Privacidade":
-        titulo_default = "Aviso de Privacidade RecordPlus"
-    elif tipo_pagina == "Termos de Uso":
-        titulo_default = "Termos de Uso RecordPlus"
-    else:
-        titulo_default = "Contrato de Assinatura RecordPlus"
+    # Inicializa dicionários de rascunhos independentes por tipo no session_state se não existirem
+    if 'rascunhos' not in st.session_state:
+        st.session_state.rascunhos = {
+            "Aviso de Privacidade": {"titulo": "Aviso de Privacidade RecordPlus", "secoes": []},
+            "Termos de Uso": {"titulo": "Termos de Uso RecordPlus", "secoes": []},
+            "Contrato de Assinatura": {"titulo": "Contrato de Assinatura RecordPlus", "secoes": []}
+        }
 
-    titulo_principal = st.text_input("Título Principal da Página", value=titulo_default)
+    if 'pagina_anterior' not in st.session_state:
+        st.session_state.pagina_anterior = tipo_pagina
+
+    if st.session_state.pagina_anterior != tipo_pagina:
+        st.session_state.pagina_anterior = tipo_pagina
+        st.rerun()
+
+    dados_atuais = st.session_state.rascunhos[tipo_pagina]
+
+    titulo_principal = st.text_input("Título Principal da Página", value=dados_atuais["titulo"], key=f"tit_principal_{tipo_pagina}")
+    st.session_state.rascunhos[tipo_pagina]["titulo"] = titulo_principal
     
     st.divider()
     
@@ -108,34 +121,34 @@ with st.sidebar:
         st.markdown("""
         * **Negrito**: `**texto**`
         * **Itálico**: `*texto*`
+        * **Sublinhado**: `_texto_`
         * **Links**: `[Texto](https://url.com)`
         * **Listas**: Inicie com `- ` ou `* ` (**com espaço**).
         * **Sub-listas**: 2 espaços antes do `- ` ou `* `.
         * **Tabelas**: Separe colunas por vírgula (a 1ª vírgula divide as colunas).
         """)
 
-if 'secoes' not in st.session_state:
-    st.session_state.secoes = []
+secoes_ativas = st.session_state.rascunhos[tipo_pagina]["secoes"]
 
 if add_texto_sidebar:
-    st.session_state.secoes.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
+    secoes_ativas.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
     st.rerun()
 
 if add_tabela_sidebar:
-    st.session_state.secoes.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
+    secoes_ativas.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
     st.rerun()
 
 # ---------------------------------------------------------
 # CONTEÚDO PRINCIPAL
 # ---------------------------------------------------------
-st.subheader("Conteúdo e Seções da Página")
+st.subheader(f"Conteúdo: {tipo_pagina}")
 
-if not st.session_state.secoes:
-    st.info("Nenhuma seção adicionada ainda. Use os botões na barra lateral para começar.")
+if not secoes_ativas:
+    st.info(f"Nenhuma seção adicionada para **{tipo_pagina}** ainda. Use os botões na barra lateral para começar.")
 
 html_secoes_geradas = ""
 
-for i, secao in enumerate(st.session_state.secoes):
+for i, secao in enumerate(secoes_ativas):
     tipo_atual = secao.get('tipo', 'texto')
     num_secao = i + 1
     titulo_exibicao = secao['titulo'].strip() if secao['titulo'] else "Nova Seção"
@@ -144,17 +157,17 @@ for i, secao in enumerate(st.session_state.secoes):
         with st.expander(f"Seção {num_secao} [Texto/Lista]: {titulo_exibicao}", expanded=True):
             col1, col2 = st.columns([4, 1])
             with col1:
-                st.session_state.secoes[i]['titulo'] = st.text_input(f"Título da Seção {num_secao}", value=secao['titulo'], key=f"tit_{i}")
-                st.session_state.secoes[i]['conteudo'] = st.text_area(f"Conteúdo", value=secao['conteudo'], key=f"cont_{i}", height=120)
+                secoes_ativas[i]['titulo'] = st.text_input(f"Título da Seção {num_secao}", value=secao['titulo'], key=f"tit_{tipo_pagina}_{i}")
+                secoes_ativas[i]['conteudo'] = st.text_area(f"Conteúdo", value=secao['conteudo'], key=f"cont_{tipo_pagina}_{i}", height=120)
             with col2:
                 st.write("")
                 st.write("")
-                if st.button("🗑️ Remover", key=f"del_{i}"):
-                    st.session_state.secoes.pop(i)
+                if st.button("🗑️ Remover", key=f"del_{tipo_pagina}_{i}"):
+                    secoes_ativas.pop(i)
                     st.rerun()
             
-            t_sec = st.session_state.secoes[i]['titulo']
-            c_sec = converter_texto_para_html(st.session_state.secoes[i]['conteudo'])
+            t_sec = secoes_ativas[i]['titulo']
+            c_sec = converter_texto_para_html(secoes_ativas[i]['conteudo'])
             
             if t_sec:
                 html_secoes_geradas += f"\n    <h3>{t_sec}</h3>"
@@ -165,24 +178,24 @@ for i, secao in enumerate(st.session_state.secoes):
         with st.expander(f"Seção {num_secao} [Tabela]: {titulo_exibicao}", expanded=True):
             col1, col2 = st.columns([4, 1])
             with col1:
-                st.session_state.secoes[i]['titulo'] = st.text_input(f"Título da Tabela {num_secao}", value=secao['titulo'], key=f"ttab_{i}")
-                st.session_state.secoes[i]['cabecalho'] = st.text_input(f"Cabeçalho da Tabela (separado por vírgula)", value=secao.get('cabecalho', ''), key=f"cab_{i}")
-                st.session_state.secoes[i]['linhas'] = st.text_area(f"Linhas da Tabela (cada linha em uma quebra)", value=secao.get('linhas', ''), key=f"lin_{i}", height=100)
+                secoes_ativas[i]['titulo'] = st.text_input(f"Título da Tabela {num_secao}", value=secao['titulo'], key=f"ttab_{tipo_pagina}_{i}")
+                secoes_ativas[i]['cabecalho'] = st.text_input(f"Cabeçalho da Tabela (separado por vírgula)", value=secao.get('cabecalho', ''), key=f"cab_{tipo_pagina}_{i}")
+                secoes_ativas[i]['linhas'] = st.text_area(f"Linhas da Tabela (cada linha em uma quebra)", value=secao.get('linhas', ''), key=f"lin_{tipo_pagina}_{i}", height=100)
             with col2:
                 st.write("")
                 st.write("")
-                if st.button("🗑️ Remover", key=f"del_{i}"):
-                    st.session_state.secoes.pop(i)
+                if st.button("🗑️ Remover", key=f"del_{tipo_pagina}_{i}"):
+                    secoes_ativas.pop(i)
                     st.rerun()
             
-            t_tab = st.session_state.secoes[i]['titulo']
-            cab_raw = st.session_state.secoes[i]['cabecalho']
+            t_tab = secoes_ativas[i]['titulo']
+            cab_raw = secoes_ativas[i]['cabecalho']
             if ',' in cab_raw and cab_raw.count(',') > 1:
                 cab_tab = [c.strip() for c in cab_raw.split(',', 1)]
             else:
                 cab_tab = [c.strip() for c in cab_raw.split(',')] if cab_raw else []
 
-            linhas_raw = st.session_state.secoes[i]['linhas'].split('\n') if st.session_state.secoes[i]['linhas'] else []
+            linhas_raw = secoes_ativas[i]['linhas'].split('\n') if secoes_ativas[i]['linhas'] else []
             
             html_tabela = ""
             if cab_tab or linhas_raw:
@@ -215,11 +228,11 @@ st.divider()
 col_bot1, col_bot2 = st.columns(2)
 with col_bot1:
     if st.button("➕ Adicionar Seção de Texto/Lista (Inferior)", use_container_width=True):
-        st.session_state.secoes.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
+        secoes_ativas.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
         st.rerun()
 with col_bot2:
     if st.button("📊 Adicionar Tabela (Inferior)", use_container_width=True):
-        st.session_state.secoes.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
+        secoes_ativas.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
         st.rerun()
 
 # ---------------------------------------------------------
@@ -265,8 +278,8 @@ html_gerado = f"""<!DOCTYPE html>
     <footer data-theme="light">
         <div class="bottom-footer">
             <ul class="list-footer">
-                <li><a href="https://www.recordplus.com/help/termosdeuso">Termos de Uso </a><span>|</span></li>
-                <li><a href="https://www.recordplus.com/help/politica">Privacidade</a>  <span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/termosdeuso/">Termos de Uso </a><span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/politica/">Privacidade</a>  <span>|</span></li>
             </ul>
         </div>
     </footer>
