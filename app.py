@@ -12,7 +12,7 @@ st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas e tabelas de forma simples.")
 
 # ---------------------------------------------------------
-# PARSER PARA IMPORTAR HTML EXISTENTE (CORRIGIDO)
+# PARSER PARA IMPORTAR HTML EXISTENTE
 # ---------------------------------------------------------
 class HTMLSecaoParser(HTMLParser):
     def __init__(self):
@@ -21,6 +21,7 @@ class HTMLSecaoParser(HTMLParser):
         self.secoes = []
         self._current_tag = None
         self._current_data = []
+        self._ativo_container = False
         self._titulo_secao_atual = ""
         self._conteudo_secao_atual = []
         self._em_h1 = False
@@ -32,6 +33,7 @@ class HTMLSecaoParser(HTMLParser):
             self._em_h1 = True
         elif tag == 'h3':
             self._em_h3 = True
+            # Se já tínhamos conteúdo acumulado numa seção anterior, salva ela
             if self._titulo_secao_atual or self._conteudo_secao_atual:
                 self.secoes.append({
                     'tipo': 'texto',
@@ -40,27 +42,35 @@ class HTMLSecaoParser(HTMLParser):
                 })
                 self._titulo_secao_atual = ""
                 self._conteudo_secao_atual = []
-        self._current_data = []
 
     def handle_endtag(self, tag):
-        conteudo_tag = "".join(self._current_data).strip()
         if tag == 'h1':
             self._em_h1 = False
-            self.titulo_principal = conteudo_tag
         elif tag == 'h3':
             self._em_h3 = False
-            self._titulo_secao_atual = conteudo_tag
-        elif tag == 'p' and not self._em_h3 and not self._em_h1:
-            if conteudo_tag:
-                self._conteudo_secao_atual.append(conteudo_tag)
+            self._titulo_secao_atual = "".join(self._current_data).strip()
+            self._current_data = []
+        elif tag == 'p' and self._em_h3 == False and self._em_h1 == False:
+            texto_p = "".join(self._current_data).strip()
+            if texto_p:
+                self._conteudo_secao_atual.append(texto_p)
+            self._current_data = []
         elif tag == 'li':
-            if conteudo_tag:
-                self._conteudo_secao_atual.append(f"- {conteudo_tag}")
-        self._current_data = []
+            texto_li = "".join(self._current_data).strip()
+            if texto_li:
+                self._conteudo_secao_atual.append(f"- {texto_li}")
+            self._current_data = []
         self._current_tag = None
 
     def handle_data(self, data):
-        if data:
+        dados = data.strip()
+        if not dados:
+            return
+        if self._em_h1:
+            self.titulo_principal += data
+        elif self._em_h3:
+            self._current_data.append(data)
+        elif self._current_tag in ['p', 'li', 'td']:
             self._current_data.append(data)
 
     def fechar(self):
@@ -81,7 +91,7 @@ def importar_html_para_estado(html_str):
     return titulo, secoes
 
 # ---------------------------------------------------------
-# FUNÇÃO DE CONVERSÃO DE TEXTO (HYPERLINKS COMO TEXTO PURO)
+# FUNÇÃO DE CONVERSÃO DE TEXTO (COM SUPORTE A SUB-LISTAS)
 # ---------------------------------------------------------
 def converter_texto_para_html(texto):
     if not texto:
@@ -99,7 +109,7 @@ def converter_texto_para_html(texto):
 
         if is_item:
             item_texto = linha_strip[2:]
-            # Apenas formatações básicas mantidas, hyperlinks ignorados/convertidos em texto simples
+            item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', item_texto)
             item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
             item_texto = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', item_texto)
             item_texto = re.sub(r'\*(.*?)\*', r'<i>\1</i>', item_texto)
@@ -132,7 +142,8 @@ def converter_texto_para_html(texto):
         if not linha_strip:
             continue
 
-        linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha)
+        linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', linha)
+        linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha_fmt)
         linha_fmt = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', linha_fmt)
         linha_fmt = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha_fmt)
         
@@ -205,9 +216,10 @@ with st.sidebar:
         * **Negrito**: `**texto**`
         * **Itálico**: `*texto*`
         * **Sublinhado**: `_texto_`
+        * **Links**: `[Texto](https://url.com)`
         * **Listas**: Inicie com `- ` ou `* ` (**com espaço**).
         * **Sub-listas**: 2 espaços antes do `- ` ou `* `.
-        * **Tabelas**: Separe colunas por vírgula.
+        * **Tabelas**: Separe colunas por vírgula (a 1ª vírgula divide as colunas).
         """)
 
 secoes_ativas = st.session_state.rascunhos[tipo_pagina]["secoes"]
@@ -272,7 +284,10 @@ for i, secao in enumerate(secoes_ativas):
             
             t_tab = secoes_ativas[i]['titulo']
             cab_raw = secoes_ativas[i]['cabecalho']
-            cab_tab = [c.strip() for c in cab_raw.split(',')] if cab_raw else []
+            if ',' in cab_raw and cab_raw.count(',') > 1:
+                cab_tab = [c.strip() for c in cab_raw.split(',', 1)]
+            else:
+                cab_tab = [c.strip() for c in cab_raw.split(',')] if cab_raw else []
 
             linhas_raw = secoes_ativas[i]['linhas'].split('\n') if secoes_ativas[i]['linhas'] else []
             
@@ -288,9 +303,13 @@ for i, secao in enumerate(secoes_ativas):
                 html_tabela += '\n            <tbody>'
                 for l in linhas_raw:
                     if l.strip():
-                        colunas = [c.strip() for c in l.split(',')]
+                        if ',' in l:
+                            colunas = [c.strip() for c in l.split(',', 1)]
+                        else:
+                            colunas = [l.strip()]
+
                         html_tabela += '\n                <tr>'
-                        for td in colunas:
+                        for idx, td in enumerate(colunas):
                             html_tabela += f'\n                    <td style="border: 1px solid #ddd; padding: 8px;">{td}</td>'
                         html_tabela += '\n                </tr>'
                 html_tabela += '\n            </tbody>\n        </table>\n    </div>\n'
