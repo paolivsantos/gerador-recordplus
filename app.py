@@ -218,13 +218,13 @@ html_gerado = f"""<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <title>RecordPlus | Vídeos, rádios, podcasts para você curtir como quiser.</title>
-    <link id="icon" rel="icon" type="image/png" href="http://media.r7.com/r7/media/recordplus/images/faviconrecordplus.ico">
-    <link href="http://media.r7.com/r7/media/recordplus/css/all.css" rel="stylesheet">
-    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/theme.css">
-    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/styles.css">
-    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/help.css">
-    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/Header.css">
-    <link rel="stylesheet" href="http://media.r7.com/r7/media/recordplus/css/footer.css">
+    <link id="icon" rel="icon" type="image/png" href="https://media.r7.com/r7/media/recordplus/images/faviconrecordplus.ico">
+    <link href="https://media.r7.com/r7/media/recordplus/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/theme.css">
+    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/styles.css">
+    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/help.css">
+    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/Header.css">
+    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/footer.css">
     <style>
         /* Estilos de grade e cabeçalho com a cor #5c4a76 */
         table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
@@ -239,7 +239,7 @@ html_gerado = f"""<!DOCTYPE html>
     <div class="header">
         <div class="menu-left-wrapper">
             <a href="https://www.recordplus.com/">
-                <img alt="Play PLUS" class="img-header" src="http://media.r7.com/r7/media/recordplus/images/im_logo_recordplus.png">
+                <img alt="Play PLUS" class="img-header" src="https://media.r7.com/r7/media/recordplus/images/im_logo_recordplus.png">
             </a>
         </div>
         <div class="buutton-login-wrapper">
@@ -259,8 +259,8 @@ html_gerado = f"""<!DOCTYPE html>
     <footer data-theme="light">
         <div class="bottom-footer">
             <ul class="list-footer">
-                <li><a href="https://www.recordplus.com/help/termosdeuso">Termos de Uso </a><span>|</span></li>
-                <li><a href="https://www.recordplus.com/help/politica">Privacidade</a>  <span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/termosdeuso">Termos de Uso </a><span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/politica/">Privacidade</a>  <span>|</span></li>
             </ul>
         </div>
     </footer>
