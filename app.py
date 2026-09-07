@@ -242,7 +242,7 @@ html_gerado = f"""<!DOCTYPE html>
         </div>
         <div class="buutton-login-wrapper">
             <p>Já possui conta?</p>
-            <a class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" target="_blank" rel="noopener noreferrer" style="position: relative; z-index: 9999; pointer-events: auto; cursor: pointer;">
+            <a id="btn-login-acessar" class="main-button-transparent button-small" href="https://www.recordplus.com/account/login" style="position: relative; z-index: 9999; pointer-events: auto; cursor: pointer;">
                 Acesse
             </a>
         </div>
@@ -262,6 +262,14 @@ html_gerado = f"""<!DOCTYPE html>
             </ul>
         </div>
     </footer>
+
+    <script>
+        // Garante a abertura em nova aba forçada via script para evitar bloqueios de iframe/embed
+        document.getElementById('btn-login-acessar').addEventListener('click', function(event) {{
+            event.preventDefault();
+            window.open(this.href, '_blank');
+        }});
+    </script>
 </body>
 </html>"""
 
