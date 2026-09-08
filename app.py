@@ -81,7 +81,7 @@ def importar_html_para_estado(html_str):
     return titulo, secoes
 
 # ---------------------------------------------------------
-# FUNÇÃO DE CONVERSÃO DE TEXTO (COM FORMATAÇÃO COMPLETA)
+# FUNÇÃO DE CONVERSÃO DE TEXTO (COM LINKS CLICÁVEIS)
 # ---------------------------------------------------------
 def converter_texto_para_html(texto):
     if not texto:
@@ -99,8 +99,8 @@ def converter_texto_para_html(texto):
 
         if is_item:
             item_texto = linha_strip[2:]
-            # Formatações reaproveitadas (Hyperlinks como texto, negrito, itálico e sublinhado)
-            item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'\1', item_texto)
+            # Corrige o link para gerar uma tag <a> real e clicável
+            item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', item_texto)
             item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
             item_texto = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', item_texto)
             item_texto = re.sub(r'\*(.*?)\*', r'<i>\1</i>', item_texto)
@@ -133,7 +133,7 @@ def converter_texto_para_html(texto):
         if not linha_strip:
             continue
 
-        linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'\1', linha)
+        linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', linha)
         linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha_fmt)
         linha_fmt = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', linha_fmt)
         linha_fmt = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha_fmt)
@@ -211,7 +211,7 @@ with st.sidebar:
         * **Negrito**: `**texto**`
         * **Itálico**: `*texto*`
         * **Sublinhado**: `_texto_`
-        * **Links (como texto)**: `[Texto](url)`
+        * **Links**: `[Texto do Link](url)`
         * **Listas**: Inicie com `- ` ou `* ` (**com espaço**).
         """)
 
@@ -346,25 +346,27 @@ else:
                 perguntas_cat.append({'pergunta': '', 'resposta': ''})
                 st.rerun()
 
-        # Montagem do HTML com hierarquia visual clara entre Categoria e Subtemas (Perguntas)
+        # Montagem do HTML com caixas para subcategorias, 20px / 16px e correções aplicadas
         if cat_nome:
             html_faq_gerado += f"""
     <div class="faq-category-wrapper">
-        <details class="faq-category-accordion">
+        <details class="faq-category-accordion" name="faq-group">
             <summary class="faq-category-title">{cat_nome}</summary>
-            <div class="faq-items-container">"""
+            <div class="faq-items-box">
+                <div class="faq-items-container">"""
             
             for p_obj in perguntas_cat:
                 p_text = p_obj.get('pergunta', '').strip()
                 r_text = converter_texto_para_html(p_obj.get('resposta', ''))
                 if p_text:
                     html_faq_gerado += f"""
-                <details class="faq-item-accordion">
-                    <summary class="faq-question">{p_text}</summary>
-                    <div class="faq-answer">{r_text}</div>
-                </details>"""
+                    <details class="faq-item-accordion">
+                        <summary class="faq-question">{p_text}</summary>
+                        <div class="faq-answer">{r_text}</div>
+                    </details>"""
             
             html_faq_gerado += """
+                </div>
             </div>
         </details>
     </div>"""
@@ -388,7 +390,7 @@ else:
         st.rerun()
 
 # ---------------------------------------------------------
-# MONTAGEM DO HTML COMPLETO
+# MONTAGEM DO HTML COMPLETO COM SCRIPT DE ACORDEÃO MÚTUO
 # ---------------------------------------------------------
 html_gerado = f"""<!DOCTYPE html>
 <html data-theme="dark" lang="pt-br">
@@ -408,32 +410,56 @@ html_gerado = f"""<!DOCTYPE html>
         th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
         th {{ background-color: #5c4a76; color: #ffffff; }}
         
-        /* Hierarquia e espaçamento refinados para a FAQ */
-        .faq-category-wrapper {{ margin-bottom: 24px; }}
+        /* Estilização da FAQ conforme especificações */
+        .faq-category-wrapper {{ margin-bottom: 16px; }}
+        
+        /* Remove marcadores padrão (bug do número 0) */
+        details.faq-category-accordion summary::-webkit-details-marker,
+        details.faq-item-accordion summary::-webkit-details-marker {{ display: none; }}
+        details.faq-category-accordion > summary,
+        details.faq-item-accordion > summary {{ list-style: none; }}
+
+        /* Categoria principal com 20px */
         .faq-category-accordion > summary.faq-category-title {{
             font-size: 20px;
             font-weight: 700;
             padding: 12px 0;
             cursor: pointer;
-            list-style: marker;
         }}
-        .faq-items-container {{
-            padding-left: 0px;
-            margin-top: 10px;
-        }}
-        details.faq-item-accordion {{
+
+        /* Caixa de fundo para as subcategorias */
+        .faq-items-box {{
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 8px;
             margin-bottom: 12px;
-            border-radius: 8px;
+        }}
+
+        /* Subcategorias (Perguntas) e Respostas com 16px */
+        details.faq-item-accordion {{
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.04);
+        }}
+        details.faq-item-accordion:last-child {{
+            margin-bottom: 0;
         }}
         summary.faq-question {{
             font-size: 16px;
             font-weight: 600;
-            padding: 14px 18px;
+            padding: 12px 16px;
             cursor: pointer;
         }}
         .faq-answer {{
-            padding: 14px 18px;
+            font-size: 16px;
+            padding: 0 16px 14px 16px;
             line-height: 1.6;
+        }}
+        .faq-answer a {{
+            color: inherit;
+            text-decoration: underline;
         }}
     </style>
 </head>
@@ -463,6 +489,24 @@ html_gerado = f"""<!DOCTYPE html>
             </ul>
         </div>
     </footer>
+
+    <script>
+        // Script para fechar as outras categorias principais ao abrir uma nova
+        document.addEventListener('DOMContentLoaded', () => {
+            const categories = document.querySelectorAll('details.faq-category-accordion');
+            categories.forEach((cat) => {
+                cat.addEventListener('toggle', (e) => {
+                    if (cat.open) {
+                        categories.forEach((other) => {
+                            if (other !== cat && other.open) {
+                                other.open = false;
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>"""
 
