@@ -345,11 +345,11 @@ else:
                 perguntas_cat.append({'pergunta': '', 'resposta': ''})
                 st.rerun()
 
-        # Montagem do HTML com caixas para subcategorias, 20px / 16px e correções aplicadas
+        # Montagem do HTML com caixas para subcategorias e fontes 20px / 16px
         if cat_nome:
             html_faq_gerado += f"""
     <div class="faq-category-wrapper">
-        <details class="faq-category-accordion" name="faq-group">
+        <details class="faq-category-accordion">
             <summary class="faq-category-title">{cat_nome}</summary>
             <div class="faq-items-box">
                 <div class="faq-items-container">"""
@@ -389,7 +389,7 @@ else:
         st.rerun()
 
 # ---------------------------------------------------------
-# MONTAGEM DO HTML COMPLETO COM SCRIPT DE ACORDEÃO MÚTUO
+# MONTAGEM DO HTML COMPLETO COM SCRIPT DE SANFONA NAS SUBCATEGORIAS
 # ---------------------------------------------------------
 html_gerado = f"""<!DOCTYPE html>
 <html data-theme="dark" lang="pt-br">
@@ -490,14 +490,14 @@ html_gerado = f"""<!DOCTYPE html>
     </footer>
 
     <script>
-        // Script para fechar as outras categorias principais ao abrir uma nova
+        // Script para fechar as outras subcategorias ao abrir uma nova dentro da mesma caixa
         document.addEventListener('DOMContentLoaded', () => {{
-            const categories = document.querySelectorAll('details.faq-category-accordion');
-            categories.forEach((cat) => {{
-                cat.addEventListener('toggle', (e) => {{
-                    if (cat.open) {{
-                        categories.forEach((other) => {{
-                            if (other !== cat && other.open) {{
+            const itemAccordions = document.querySelectorAll('details.faq-item-accordion');
+            itemAccordions.forEach((item) => {{
+                item.addEventListener('toggle', (e) => {{
+                    if (item.open) {{
+                        itemAccordions.forEach((other) => {{
+                            if (other !== item && other.open) {{
                                 other.open = false;
                             }}
                         }});
