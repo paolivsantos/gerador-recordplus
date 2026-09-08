@@ -81,7 +81,7 @@ def importar_html_para_estado(html_str):
     return titulo, secoes
 
 # ---------------------------------------------------------
-# FUNÇÃO DE CONVERSÃO DE TEXTO (HYPERLINKS COMO TEXTO PURO)
+# FUNÇÃO DE CONVERSÃO DE TEXTO (COM FORMATAÇÃO COMPLETA)
 # ---------------------------------------------------------
 def converter_texto_para_html(texto):
     if not texto:
@@ -99,6 +99,8 @@ def converter_texto_para_html(texto):
 
         if is_item:
             item_texto = linha_strip[2:]
+            # Formatações reaproveitadas (Hyperlinks como texto, negrito, itálico e sublinhado)
+            item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'\1', item_texto)
             item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
             item_texto = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', item_texto)
             item_texto = re.sub(r'\*(.*?)\*', r'<i>\1</i>', item_texto)
@@ -131,7 +133,8 @@ def converter_texto_para_html(texto):
         if not linha_strip:
             continue
 
-        linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha)
+        linha_fmt = re.sub(r'\[(.*?)\]\((.*?)\)', r'\1', linha)
+        linha_fmt = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', linha_fmt)
         linha_fmt = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', linha_fmt)
         linha_fmt = re.sub(r'\*(.*?)\*', r'<i>\1</i>', linha_fmt)
         
@@ -162,7 +165,7 @@ with st.sidebar:
             "Aviso de Privacidade": {"titulo": "Aviso de Privacidade RecordPlus", "secoes": []},
             "Termos de Uso": {"titulo": "Termos de Uso RecordPlus", "secoes": []},
             "Contrato de Assinatura": {"titulo": "Contrato de Assinatura RecordPlus", "secoes": []},
-            "F.A.Q.": {"titulo": "F.A.Q.", "secoes": []} # No caso da FAQ, secoes guardará as Categorias/Perguntas
+            "F.A.Q.": {"titulo": "F.A.Q.", "secoes": []}
         }
 
     if 'pagina_anterior' not in st.session_state:
@@ -204,20 +207,13 @@ with st.sidebar:
     st.divider()
 
     with st.expander("💡 Guia Rápido de Formatação", expanded=True):
-        if tipo_pagina != "F.A.Q.":
-            st.markdown("""
-            * **Negrito**: `**texto**`
-            * **Itálico**: `*texto*`
-            * **Sublinhado**: `_texto_`
-            * **Listas**: Inicie com `- ` ou `* ` (**com espaço**).
-            * **Sub-listas**: 2 espaços antes do `- ` ou `* `.
-            * **Tabelas**: Separe colunas por vírgula.
-            """)
-        else:
-            st.markdown("""
-            * Crie categorias (ex: *Gerenciamento*, *Assinatura*).
-            * Dentro de cada categoria, adicione perguntas e respostas.
-            """)
+        st.markdown("""
+        * **Negrito**: `**texto**`
+        * **Itálico**: `*texto*`
+        * **Sublinhado**: `_texto_`
+        * **Links (como texto)**: `[Texto](url)`
+        * **Listas**: Inicie com `- ` ou `* ` (**com espaço**).
+        """)
 
 secoes_ativas = st.session_state.rascunhos[tipo_pagina]["secoes"]
 
@@ -314,7 +310,6 @@ if tipo_pagina != "F.A.Q.":
                 html_secoes_geradas += html_tabela
 
 else:
-    # LÓGICA ESPECÍFICA PARA FAQ (Categorias com Subtemas/Perguntas)
     html_faq_gerado = ""
     for i, cat in enumerate(secoes_ativas):
         cat_nome = cat.get('nome_categoria', '').strip() or f"Categoria {i+1}"
@@ -351,7 +346,7 @@ else:
                 perguntas_cat.append({'pergunta': '', 'resposta': ''})
                 st.rerun()
 
-        # Montagem do HTML da FAQ baseada em Accordions (<details> e <summary>)
+        # Montagem do HTML com hierarquia visual clara entre Categoria e Subtemas (Perguntas)
         if cat_nome:
             html_faq_gerado += f"""
     <div class="faq-category-wrapper">
@@ -412,9 +407,34 @@ html_gerado = f"""<!DOCTYPE html>
         table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
         th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
         th {{ background-color: #5c4a76; color: #ffffff; }}
-        /* Estilos base para os accordions da FAQ caso os CSS externos precisem de reforço */
-        details.faq-category-accordion, details.faq-item-accordion {{ margin-bottom: 12px; }}
-        summary.faq-category-title, summary.faq-question {{ cursor: pointer; }}
+        
+        /* Hierarquia e espaçamento refinados para a FAQ */
+        .faq-category-wrapper {{ margin-bottom: 24px; }}
+        .faq-category-accordion > summary.faq-category-title {{
+            font-size: 20px;
+            font-weight: 700;
+            padding: 12px 0;
+            cursor: pointer;
+            list-style: marker;
+        }}
+        .faq-items-container {{
+            padding-left: 0px;
+            margin-top: 10px;
+        }}
+        details.faq-item-accordion {{
+            margin-bottom: 12px;
+            border-radius: 8px;
+        }}
+        summary.faq-question {{
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px 18px;
+            cursor: pointer;
+        }}
+        .faq-answer {{
+            padding: 14px 18px;
+            line-height: 1.6;
+        }}
     </style>
 </head>
 <body>
