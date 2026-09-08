@@ -99,7 +99,6 @@ def converter_texto_para_html(texto):
 
         if is_item:
             item_texto = linha_strip[2:]
-            # Corrige o link para gerar uma tag <a> real e clicável
             item_texto = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2" target="_blank">\1</a>', item_texto)
             item_texto = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', item_texto)
             item_texto = re.sub(r'(?<!\w)_(.+?_)(?!\w)', r'<u>\1</u>', item_texto)
@@ -492,20 +491,20 @@ html_gerado = f"""<!DOCTYPE html>
 
     <script>
         // Script para fechar as outras categorias principais ao abrir uma nova
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {{
             const categories = document.querySelectorAll('details.faq-category-accordion');
-            categories.forEach((cat) => {
-                cat.addEventListener('toggle', (e) => {
-                    if (cat.open) {
-                        categories.forEach((other) => {
-                            if (other !== cat && other.open) {
+            categories.forEach((cat) => {{
+                cat.addEventListener('toggle', (e) => {{
+                    if (cat.open) {{
+                        categories.forEach((other) => {{
+                            if (other !== cat && other.open) {{
                                 other.open = false;
-                            }
-                        });
-                    }
-                });
-            });
-        });
+                            }}
+                        }});
+                    }}
+                }});
+            }});
+        }});
     </script>
 </body>
 </html>"""
