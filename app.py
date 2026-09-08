@@ -389,7 +389,7 @@ else:
         st.rerun()
 
 # ---------------------------------------------------------
-# MONTAGEM DO HTML COMPLETO COM SCRIPT DE SANFONA NAS SUBCATEGORIAS
+# MONTAGEM DO HTML COMPLETO COM SETAS E SANFONA NAS SUBCATEGORIAS
 # ---------------------------------------------------------
 html_gerado = f"""<!DOCTYPE html>
 <html data-theme="dark" lang="pt-br">
@@ -412,18 +412,35 @@ html_gerado = f"""<!DOCTYPE html>
         /* Estilização da FAQ conforme especificações */
         .faq-category-wrapper {{ margin-bottom: 16px; }}
         
-        /* Remove marcadores padrão (bug do número 0) */
+        /* Remove marcadores padrão */
         details.faq-category-accordion summary::-webkit-details-marker,
         details.faq-item-accordion summary::-webkit-details-marker {{ display: none; }}
         details.faq-category-accordion > summary,
         details.faq-item-accordion > summary {{ list-style: none; }}
 
-        /* Categoria principal com 20px */
+        /* Categoria principal com 20px e Seta Indicativa */
         .faq-category-accordion > summary.faq-category-title {{
             font-size: 20px;
             font-weight: 700;
-            padding: 12px 0;
+            padding: 12px 24px 12px 0;
             cursor: pointer;
+            position: relative;
+        }}
+        .faq-category-accordion > summary.faq-category-title::after {{
+            content: '';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%) rotate(0deg);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid currentColor;
+            transition: transform 0.3s ease;
+        }}
+        .faq-category-accordion[open] > summary.faq-category-title::after {{
+            transform: translateY(-50%) rotate(180deg);
         }}
 
         /* Caixa de fundo para as subcategorias */
@@ -436,7 +453,7 @@ html_gerado = f"""<!DOCTYPE html>
             margin-bottom: 12px;
         }}
 
-        /* Subcategorias (Perguntas) e Respostas com 16px */
+        /* Subcategorias (Perguntas) e Respostas com 16px e Seta Indicativa */
         details.faq-item-accordion {{
             margin-bottom: 8px;
             border-radius: 6px;
@@ -448,9 +465,27 @@ html_gerado = f"""<!DOCTYPE html>
         summary.faq-question {{
             font-size: 16px;
             font-weight: 600;
-            padding: 12px 16px;
+            padding: 12px 40px 12px 16px;
             cursor: pointer;
+            position: relative;
         }}
+        summary.faq-question::after {{
+            content: '';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%) rotate(0deg);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid currentColor;
+            transition: transform 0.3s ease;
+        }}
+        details.faq-item-accordion[open] > summary.faq-question::after {{
+            transform: translateY(-50%) rotate(180deg);
+        }}
+
         .faq-answer {{
             font-size: 16px;
             padding: 0 16px 14px 16px;
