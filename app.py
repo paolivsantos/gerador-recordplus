@@ -12,7 +12,30 @@ st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas, tabelas e FAQs de forma simples.")
 
 # ---------------------------------------------------------
-# PARSER PARA IMPORTAR HTML EXISTENTE (CORRIGIDO)
+# INICIALIZAÇÃO DO ESTADO GLOBAL DE RASCUNHOS
+# ---------------------------------------------------------
+if 'rascunhos' not in st.session_state:
+    st.session_state.rascunhos = {
+        "Aviso de Privacidade": {
+            "titulo": "Aviso de Privacidade RecordPlus", 
+            "secoes": []
+        },
+        "Termos de Uso": {
+            "titulo": "Termos de Uso RecordPlus", 
+            "secoes": []
+        },
+        "Contrato de Assinatura": {
+            "titulo": "Contrato de Assinatura RecordPlus", 
+            "secoes": []
+        },
+        "F.A.Q.": {
+            "titulo": "F.A.Q.", 
+            "secoes": []
+        }
+    }
+
+# ---------------------------------------------------------
+# PARSER PARA IMPORTAR HTML EXISTENTE
 # ---------------------------------------------------------
 class HTMLSecaoParser(HTMLParser):
     def __init__(self):
@@ -159,24 +182,14 @@ with st.sidebar:
         key="tipo_pagina_select"
     )
     
-    if 'rascunhos' not in st.session_state:
-        st.session_state.rascunhos = {
-            "Aviso de Privacidade": {"titulo": "Aviso de Privacidade RecordPlus", "secoes": []},
-            "Termos de Uso": {"titulo": "Termos de Uso RecordPlus", "secoes": []},
-            "Contrato de Assinatura": {"titulo": "Contrato de Assinatura RecordPlus", "secoes": []},
-            "F.A.Q.": {"titulo": "F.A.Q.", "secoes": []}
-        }
-
-    if 'pagina_anterior' not in st.session_state:
-        st.session_state.pagina_anterior = tipo_pagina
-
-    if st.session_state.pagina_anterior != tipo_pagina:
-        st.session_state.pagina_anterior = tipo_pagina
-        st.rerun()
-
     dados_atuais = st.session_state.rascunhos[tipo_pagina]
 
-    titulo_principal = st.text_input("Título Principal da Página", value=dados_atuais["titulo"], key=f"tit_principal_{tipo_pagina}")
+    # Atualização direta do título principal vinculado ao rascunho da aba ativa
+    titulo_principal = st.text_input(
+        "Título Principal da Página", 
+        value=dados_atuais["titulo"], 
+        key=f"tit_principal_{tipo_pagina}"
+    )
     st.session_state.rascunhos[tipo_pagina]["titulo"] = titulo_principal
     
     st.divider()
@@ -311,14 +324,15 @@ if tipo_pagina != "F.A.Q.":
 else:
     html_faq_gerado = ""
     for i, cat in enumerate(secoes_ativas):
-        cat_nome = cat.get('nome_categoria', '').strip() or f"Categoria {i+1}"
-        with st.expander(f"📂 Categoria: {cat_nome}", expanded=True):
+        cat_nome_atual = cat.get('nome_categoria', '')
+        with st.expander(f"📂 Categoria: {cat_nome_atual.strip() or f'Categoria {i+1}'}", expanded=True):
             col1, col2 = st.columns([4, 1])
             with col1:
-                secoes_ativas[i]['nome_categoria'] = st.text_input(f"Nome da Categoria {i+1}", value=cat.get('nome_categoria', ''), key=f"cat_nome_{i}")
+                cat_nome_input = st.text_input(f"Nome da Categoria {i+1}", value=cat_nome_atual, key=f"cat_nome_{tipo_pagina}_{i}")
+                secoes_ativas[i]['nome_categoria'] = cat_nome_input
             with col2:
                 st.write("")
-                if st.button("🗑️ Remover Categoria", key=f"del_cat_{i}"):
+                if st.button("🗑️ Remover Categoria", key=f"del_cat_{tipo_pagina}_{i}"):
                     secoes_ativas.pop(i)
                     st.rerun()
 
@@ -331,26 +345,29 @@ else:
             for p_idx, pergunta_obj in enumerate(perguntas_cat):
                 cols_p = st.columns([10, 1])
                 with cols_p[0]:
-                    perguntas_cat[p_idx]['pergunta'] = st.text_input(f"Pergunta {p_idx+1}", value=pergunta_obj.get('pergunta', ''), key=f"p_{i}_{p_idx}")
-                    perguntas_cat[p_idx]['resposta'] = st.text_area(f"Resposta {p_idx+1}", value=pergunta_obj.get('resposta', ''), key=f"r_{i}_{p_idx}", height=80)
+                    p_val = pergunta_obj.get('pergunta', '')
+                    r_val = pergunta_obj.get('resposta', '')
+                    
+                    perguntas_cat[p_idx]['pergunta'] = st.text_input(f"Pergunta {p_idx+1}", value=p_val, key=f"p_{tipo_pagina}_{i}_{p_idx}")
+                    perguntas_cat[p_idx]['resposta'] = st.text_area(f"Resposta {p_idx+1}", value=r_val, key=f"r_{tipo_pagina}_{i}_{p_idx}", height=80)
                 with cols_p[1]:
                     st.write("")
                     st.write("")
-                    if st.button("❌", key=f"del_p_{i}_{p_idx}", help="Remover pergunta"):
+                    if st.button("❌", key=f"del_p_{tipo_pagina}_{i}_{p_idx}", help="Remover pergunta"):
                         perguntas_cat.pop(p_idx)
                         st.rerun()
                 st.divider()
 
-            if st.button(f"➕ Adicionar Pergunta em '{cat_nome}'", key=f"add_p_btn_{i}"):
+            if st.button(f"➕ Adicionar Pergunta em '{cat_nome_input or f'Categoria {i+1}'}'", key=f"add_p_btn_{tipo_pagina}_{i}"):
                 perguntas_cat.append({'pergunta': '', 'resposta': ''})
                 st.rerun()
 
-        # Montagem do HTML com caixas para subcategorias e fontes 20px / 16px
-        if cat_nome:
+        # Montagem do HTML da FAQ
+        if cat_nome_atual.strip():
             html_faq_gerado += f"""
     <div class="faq-category-wrapper">
         <details class="faq-category-accordion">
-            <summary class="faq-category-title">{cat_nome}</summary>
+            <summary class="faq-category-title">{cat_nome_atual}</summary>
             <div class="faq-items-box">
                 <div class="faq-items-container">"""
             
