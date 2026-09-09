@@ -1,5 +1,6 @@
 import streamlit as st
 import re
+import json
 from html.parser import HTMLParser
 
 st.set_page_config(
@@ -192,6 +193,38 @@ with st.sidebar:
     )
     st.session_state.rascunhos[tipo_pagina]["titulo"] = titulo_principal
     
+    st.divider()
+
+    # ---------------------------------------------------------
+    # GERENCIAMENTO DE RASCUNHOS (JSON)
+    # ---------------------------------------------------------
+    st.subheader("💾 Gerenciar Rascunhos")
+    
+    # Botão de Download do JSON atual
+    json_str = json.dumps(st.session_state.rascunhos, ensure_ascii=False, indent=4)
+    st.download_button(
+        label="📥 Baixar Rascunhos (JSON)",
+        data=json_str,
+        file_name="rascunhos_recordplus.json",
+        mime="application/json",
+        use_container_width=True,
+        help="Baixe um arquivo contendo todas as suas alterações em todas as abas."
+    )
+
+    # Uploader para carregar o JSON salvo anteriormente
+    arquivo_carregado = st.file_uploader("📂 Carregar Rascunhos (JSON)", type=["json"], help="Envie seu arquivo JSON salvo anteriormente para restaurar tudo.")
+    if arquivo_carregado is not None:
+        try:
+            rascunhos_carregados = json.load(arquivo_carregado)
+            if isinstance(rascunhos_carregados, dict):
+                st.session_state.rascunhos = rascunhos_carregados
+                st.success("Rascunhos carregados com sucesso!")
+                st.rerun()
+            else:
+                st.error("O arquivo JSON não possui o formato esperado.")
+        except Exception as e:
+            st.error(f"Erro ao ler o arquivo: {e}")
+
     st.divider()
     
     if tipo_pagina != "F.A.Q.":
