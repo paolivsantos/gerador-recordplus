@@ -578,8 +578,10 @@ html_gerado = f"""<!DOCTYPE html>
     <footer data-theme="light">
         <div class="bottom-footer">
             <ul class="list-footer">
-                <li><a href="https://descubra.recordplus.com/termosdeuso/">Termos de Uso </a><span>|</span></li>
-                <li><a href="https://descubra.recordplus.com/politica/">Privacidade</a>  <span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/contratoassinatura/">Contrato de Assinatura</a><span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/faq/">FAQ</a><span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/politica/">Privacidade</a><span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/termosdeuso/">Termos de Uso</a></li>
             </ul>
         </div>
     </footer>
