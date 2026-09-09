@@ -196,7 +196,7 @@ with st.sidebar:
     st.divider()
 
     # ---------------------------------------------------------
-    # GERENCIAMENTO DE RASCUNHOS (JSON)
+    # GERENCIAMENTO DE RASCUNHOS (JSON) COM BOTÃO DE CARREGAMENTO EXPLÍCITO
     # ---------------------------------------------------------
     st.subheader("💾 Gerenciar Rascunhos")
     
@@ -211,19 +211,29 @@ with st.sidebar:
         help="Baixe um arquivo contendo todas as suas alterações em todas as abas."
     )
 
-    # Uploader para carregar o JSON salvo anteriormente
-    arquivo_carregado = st.file_uploader("📂 Carregar Rascunhos (JSON)", type=["json"], help="Envie seu arquivo JSON salvo anteriormente para restaurar tudo.")
+    st.write("")
+    
+    # Uploader apenas para selecionar o arquivo
+    arquivo_carregado = st.file_uploader(
+        "Selecionar arquivo JSON", 
+        type=["json"], 
+        help="Escolha o arquivo de rascunho salvo anteriormente.",
+        label_visibility="collapsed"
+    )
+
+    # Botão Carregar só executa a ação de fato quando o usuário clica nele
     if arquivo_carregado is not None:
-        try:
-            rascunhos_carregados = json.load(arquivo_carregado)
-            if isinstance(rascunhos_carregados, dict):
-                st.session_state.rascunhos = rascunhos_carregados
-                st.success("Rascunhos carregados com sucesso!")
-                st.rerun()
-            else:
-                st.error("O arquivo JSON não possui o formato esperado.")
-        except Exception as e:
-            st.error(f"Erro ao ler o arquivo: {e}")
+        if st.button("📂 Processar e Carregar Rascunho", type="primary", use_container_width=True):
+            try:
+                rascunhos_carregados = json.load(arquivo_carregado)
+                if isinstance(rascunhos_carregados, dict):
+                    st.session_state.rascunhos = rascunhos_carregados
+                    st.success("Rascunhos carregados com sucesso!")
+                    st.rerun()
+                else:
+                    st.error("O arquivo JSON não possui o formato esperado.")
+            except Exception as e:
+                st.error(f"Erro ao ler o arquivo: {e}")
 
     st.divider()
     
