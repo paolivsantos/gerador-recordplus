@@ -324,7 +324,7 @@ if tipo_pagina != "F.A.Q.":
                 with col1:
                     secoes_ativas[i]['titulo'] = st.text_input(f"Título da Tabela {num_secao}", value=secao['titulo'], key=f"ttab_{tipo_pagina}_{i}")
                     secoes_ativas[i]['cabecalho'] = st.text_input(f"Cabeçalho da Tabela (separado por vírgula)", value=secao.get('cabecalho', ''), key=f"cab_{tipo_pagina}_{i}")
-                    secoes_ativas[i]['linhas'] = st.text_area(f"Linhas da Tabela (cada linha em uma quebra)", value=secao.get('linhas', ''), key=f"lin_{tipo_pagina}_{i}", height=100)
+                    secoes_ativas[i]['linhas'] = st.text_area(f"Linhas da Tabela (cada linha em uma quebra, use a 1ª vírgula para separar colunas)", value=secao.get('linhas', ''), key=f"lin_{tipo_pagina}_{i}", height=100)
                 with col2:
                     st.write("")
                     st.write("")
@@ -334,7 +334,7 @@ if tipo_pagina != "F.A.Q.":
                 
                 t_tab = secoes_ativas[i]['titulo']
                 cab_raw = secoes_ativas[i]['cabecalho']
-                cab_tab = [c.strip() for c in cab_raw.split(',')] if cab_raw else []
+                cab_tab = [c.strip() for c in cab_raw.split(',', 1)] if cab_raw else []
 
                 linhas_raw = secoes_ativas[i]['linhas'].split('\n') if secoes_ativas[i]['linhas'] else []
                 
@@ -350,7 +350,8 @@ if tipo_pagina != "F.A.Q.":
                     html_tabela += '\n            <tbody>'
                     for l in linhas_raw:
                         if l.strip():
-                            colunas = [c.strip() for c in l.split(',')]
+                            # Considera APENAS A PRIMEIRA VÍRGULA para separar as colunas da tabela
+                            colunas = [c.strip() for c in l.split(',', 1)]
                             html_tabela += '\n                <tr>'
                             for td in colunas:
                                 html_tabela += f'\n                    <td style="border: 1px solid #ddd; padding: 8px;">{td}</td>'
