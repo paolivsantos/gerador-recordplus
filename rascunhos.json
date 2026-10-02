@@ -276,6 +276,10 @@
                     {
                         "pergunta": "Como saber se minha assinatura foi efetivada via Google ou Apple?",
                         "resposta": "Abra a loja de aplicativos do seu celular (App Store se for iOS, Play Store se for o Android) e acesse a área de pagamentos e assinaturas. Se o **RecordPlus** estiver listado, e com status ativo, significa que eles são os responsáveis pela manutenção da sua assinatura.\n\nSe não aparecer o nosso aplicativo na lista, faça uma segunda verificação: entre na sua conta do **RecordPlus**, clique nos três traços e em seguida no seu nome. Veja o que aparece em Detalhes dos Planos. Se estiver escrito Apple ou Google, a sua assinatura está atrelada ao sistema deles, porém em outra conta ou dispositivo iOS ou Android.\n\nSe não estiver listado nas lojas de aplicativos, e também não aparecer Apple ou Google na área da sua conta, significa que sua assinatura não está atrelada ao sistema deles."
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             },
