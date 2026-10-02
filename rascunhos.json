@@ -25,7 +25,13 @@
             {
                 "tipo": "texto",
                 "titulo": "Uso de Informações",
-                "conteudo": ""
+                "conteudo": "Agregados em grupos, abaixo listamos todas estas finalidades:"
+            },
+            {
+                "tipo": "tabela",
+                "titulo": "",
+                "cabecalho": "",
+                "linhas": ""
             }
         ]
     },
