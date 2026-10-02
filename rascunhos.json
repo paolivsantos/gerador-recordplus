@@ -226,6 +226,10 @@
                     {
                         "pergunta": "Esqueci a senha",
                         "resposta": "Se tiver esquecido a senha, basta clicar em Esqueci a Senha e você receberá na caixa de entrada do e-mail um link para criar uma nova. Lembrando que essa nova senha deverá ser utilizada em todos os dispositivos a partir do momento da troca."
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             },
