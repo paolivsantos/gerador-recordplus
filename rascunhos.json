@@ -373,6 +373,10 @@
                     },
                     {
                         "pergunta": "Qual o prazo para um conteúdo ser disponibilizado no catálogo?",
+                        "resposta": "O prazo máximo para qualquer conteúdo ser disponibilizado no catálogo após ir ao ar na TV é de até 12 horas. Caso o prazo seja maior que esse, procure-nos pelos canais oficiais de atendimento."
+                    },
+                    {
+                        "pergunta": "",
                         "resposta": ""
                     }
                 ]
