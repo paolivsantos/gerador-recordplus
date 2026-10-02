@@ -186,7 +186,12 @@
             {
                 "tipo": "categoria_faq",
                 "nome_categoria": "Gerenciamento",
-                "perguntas": []
+                "perguntas": [
+                    {
+                        "pergunta": "",
+                        "resposta": ""
+                    }
+                ]
             },
             {
                 "tipo": "categoria_faq",
