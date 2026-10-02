@@ -111,6 +111,11 @@
             {
                 "tipo": "texto",
                 "titulo": "9. Obrigações e Responsabilidades do Usuário",
+                "conteudo": "O Usuário assume integralmente todos os ônus e responsabilidades decorrentes de seus atos na Plataforma RecordPlus, respondendo, ainda, pelos atos praticados por terceiros que se valerem do uso de Login e Senha de sua titularidade\n\nO Usuário deverá indenizar a RecordPlus ou terceiros por quaisquer ações ou omissões que causem prejuízos advindos do descumprimento das regras estabelecidas nestes Termos, nas demais diretrizes e políticas da RecordPlus ou constantes da lei vigente.\n\nO Usuário concorda em indenizar a RecordPlus por todo e qualquer dano ou perda que possa eventualmente surgir decorrente do seu acesso e uso da Plataforma ou por qualquer demanda promovida por outros Usuários ou terceiros decorrentes da violação de qualquer cláusula destes Termos, de outras políticas e regras estabelecidas pela RecordPlus, ou da legislação vigente."
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
                 "conteudo": ""
             }
         ]
