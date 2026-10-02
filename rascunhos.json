@@ -224,7 +224,7 @@
                         "resposta": "Acesse sua conta pelo site [https://www.recordplus.com/](https://www.recordplus.com/) e clique nos três traços;\n\nDepois, clique na sua foto ou nome de cadastro;\n\nEm ‘acessos e segurança’ clique em ‘alterar’;\n\nPreencha o campo do e-mail com o novo e-mail e clique em ‘salvar’."
                     },
                     {
-                        "pergunta": "",
+                        "pergunta": "Esqueci a senha",
                         "resposta": ""
                     }
                 ]
