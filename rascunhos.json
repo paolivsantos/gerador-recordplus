@@ -11,6 +11,11 @@
                 "tipo": "texto",
                 "titulo": "Atualizações",
                 "conteudo": ""
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
+                "conteudo": ""
             }
         ]
     },
