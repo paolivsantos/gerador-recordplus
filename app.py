@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # 2. Configurações e segredos do GitHub
-GITHUB_TOKEN = st.secrets["GITHUB_TOKEN", ""]
+GITHUB_TOKEN = st.secrets.get("GITHUB_TOKEN", "")
 GITHUB_REPO = st.secrets.get("GITHUB_REPO", "paolivsantos/gerador-recordplus")
 GITHUB_BRANCH = st.secrets.get("GITHUB_BRANCH", "main")
 ARQUIVO_JSON_GITHUB = "rascunhos.json"
@@ -237,12 +237,11 @@ with st.sidebar:
     
     st.info(f"Status: {st.session_state.status_salvamento}")
     
-    # Botão seguro para salvar na nuvem sem quebrar a interface
     if st.button("💾 Salvar na Nuvem (GitHub)", use_container_width=True, type="primary"):
         sucesso, novo_sha = salvar_rascunhos_github(st.session_state.rascunhos, st.session_state.github_sha)
         if sucesso:
             st.session_state.github_sha = novo_sha
-            st.session_state.status_salvamento = "Salvo na nuvem ☁️"
+            st.session_state.status_salvamento = "Salvo na nuvem ☁️️"
             st.success("Salvo com sucesso!")
             st.rerun()
         else:
@@ -300,7 +299,7 @@ with st.sidebar:
         add_cat_sidebar = st.button("Adicionar Categoria", use_container_width=True)
 
     st.divider()
-
+    
     with st.expander("💡 Guia Rápido de Formatação", expanded=True):
         st.markdown("""
         * **Negrito**: `**texto**`
