@@ -13,9 +13,9 @@ st.set_page_config(
 )
 
 # 2. Configurações e segredos do GitHub
-GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
-GITHUB_REPO = "paolivsantos/gerador-recordplus"
-GITHUB_BRANCH = "main"
+GITHUB_TOKEN = st.secrets["GITHUB_TOKEN", ""]
+GITHUB_REPO = st.secrets.get("GITHUB_REPO", "paolivsantos/gerador-recordplus")
+GITHUB_BRANCH = st.secrets.get("GITHUB_BRANCH", "main")
 ARQUIVO_JSON_GITHUB = "rascunhos.json"
 
 st.title("Gerador de HTML Dinâmico - RecordPlus")
