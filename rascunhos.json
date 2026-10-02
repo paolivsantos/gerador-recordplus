@@ -366,6 +366,10 @@
                     {
                         "pergunta": "Onde assistir à transmissão ao vivo?",
                         "resposta": "Se você estiver assistindo via web, os canais ao vivo ficam em ‘Ao Vivo’, na parte superior da tela.\n\nJá se você estiver assistindo via Smartphone, basta clicar em ‘Ao vivo’, na parte inferior da tela.\n\nOu, se você estiver assistindo na sua Smart TV, localize ‘Ao Vivo’, nos comandos laterais."
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             },
