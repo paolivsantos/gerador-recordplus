@@ -22,13 +22,16 @@ st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas, tabelas e FAQs de forma simples.")
 
 # ---------------------------------------------------------
-# FUNÇÕES DE INTEGRAÇÃO COM O GITHUB
+# FUNÇÕES DE INTEGRAÇÃO COM O GITHUB (Padrão Sintonizado)
 # ---------------------------------------------------------
-def carregar_rascunhos_github():
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{ARQUIVO_JSON_GITHUB}"
+def carregar_do_github():
+    if not GITHUB_TOKEN or not GITHUB_REPO:
+        return None, None
+    
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{ARQUIVO_JSON_GITHUB}?ref={GITHUB_BRANCH}"
     headers = {
         "Authorization": f"Bearer {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
+        "Accept": "application/vnd.github+json"
     }
     try:
         response = requests.get(url, headers=headers)
@@ -43,59 +46,60 @@ def carregar_rascunhos_github():
     except Exception:
         return None, None
 
-def salvar_rascunhos_github(dados_dict, sha=None):
+def salvar_no_github(dados_dict):
+    if not GITHUB_TOKEN or not GITHUB_REPO:
+        st.error("Credenciais do GitHub não configuradas.")
+        return False
+    
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{ARQUIVO_JSON_GITHUB}"
     headers = {
         "Authorization": f"Bearer {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json"
     }
     
-    # Se o SHA não foi fornecido na sessão, buscamos o SHA atual do arquivo no GitHub para evitar o erro 422
-    if not sha:
-        try:
-            resp_get = requests.get(url, headers=headers)
-            if resp_get.status_code == 200:
-                sha = resp_get.json().get("sha")
-        except Exception:
-            pass
-
-    conteudo_str = json.dumps(dados_dict, ensure_ascii=False, indent=4)
-    conteudo_base64 = base64.b64encode(conteudo_str.encode("utf-8")).decode("utf-8")
+    # Busca o SHA atual para permitir atualizações corretas (evita erro 422)
+    _, sha_atual = carregar_do_github()
+    
+    json_str = json.dumps(dados_dict, ensure_ascii=False, indent=4)
+    content_encoded = base64.b64encode(json_str.encode("utf-8")).decode("utf-8")
     
     payload = {
-        "message": "Atualização de rascunhos via Gerador RecordPlus",
-        "content": conteudo_base64,
+        "message": "Atualização automática de rascunhos via Gerador RecordPlus [skip ci]",
+        "content": content_encoded,
         "branch": GITHUB_BRANCH
     }
-    
-    # Se obtivemos o SHA (o arquivo já existe), incluímos no payload
-    if sha:
-        payload["sha"] = sha
+    if sha_atual:
+        payload["sha"] = sha_atual
         
     try:
         response = requests.put(url, headers=headers, json=payload)
-        
         if response.status_code in [200, 201]:
-            return True, response.json().get("content", {}).get("sha")
+            return True
         else:
-            try:
-                err_msg = response.json().get('message', response.text)
-            except:
-                err_msg = response.text
-            st.error(f"Erro GitHub ({response.status_code}): {err_msg}")
-            return False, sha
+            err_msg = response.json().get('message', response.text)
+            st.error(f"Erro ao salvar alteração no GitHub: {err_msg}")
+            return False
     except Exception as e:
-        st.error(f"Exceção de conexão: {str(e)}")
-        return False, sha
+        st.error(f"Erro de conexão com o GitHub: {e}")
+        return False
+
+def aplicar_e_sintonizar(novo_dict):
+    """Atualiza o estado e sincroniza automaticamente no GitHub com feedback visual"""
+    st.session_state.rascunhos = novo_dict
+    sucesso_git = salvar_no_github(novo_dict)
+
+    if sucesso_git:
+        st.toast("Alteração salva e sincronizada no GitHub com sucesso!", icon="🚀")
+    st.rerun()
 
 # ---------------------------------------------------------
 # INICIALIZAÇÃO DO ESTADO GLOBAL
 # ---------------------------------------------------------
 if 'rascunhos' not in st.session_state:
-    dados_git, sha_git = carregar_rascunhos_github()
+    dados_git, _ = carregar_do_github()
     if dados_git:
         st.session_state.rascunhos = dados_git
-        st.session_state.github_sha = sha_git
     else:
         st.session_state.rascunhos = {
             "Aviso de Privacidade": {"titulo": "Aviso de Privacidade RecordPlus", "secoes": []},
@@ -103,13 +107,9 @@ if 'rascunhos' not in st.session_state:
             "Contrato de Assinatura": {"titulo": "Contrato de Assinatura RecordPlus", "secoes": []},
             "F.A.Q.": {"titulo": "F.A.Q.", "secoes": []}
         }
-        st.session_state.github_sha = None
-
-if 'github_sha' not in st.session_state:
-    st.session_state.github_sha = None
 
 if 'status_salvamento' not in st.session_state:
-    st.session_state.status_salvamento = "Pronto"
+    st.session_state.status_salvamento = "Sincronizado com a nuvem ☁️"
 
 # ---------------------------------------------------------
 # PARSER PARA IMPORTAR HTML EXISTENTE
@@ -253,17 +253,14 @@ def converter_texto_para_html(texto):
 with st.sidebar:
     st.header("Configurações")
     
-    st.info(f"Status: {st.session_state.status_salvamento}")
+    st.info("☁️ Sincronizado automaticamente com o GitHub!")
     
-    if st.button("💾 Salvar na Nuvem (GitHub)", use_container_width=True, type="primary"):
-        sucesso, novo_sha = salvar_rascunhos_github(st.session_state.rascunhos, st.session_state.github_sha)
+    if st.button("💾 Sincronizar Agora", use_container_width=True, type="primary"):
+        sucesso = salvar_no_github(st.session_state.rascunhos)
         if sucesso:
-            st.session_state.github_sha = novo_sha
-            st.session_state.status_salvamento = "Salvo na nuvem ☁"
-            st.success("Salvo com sucesso!")
+            st.toast("Sincronizado com sucesso!", icon="☁️")
+            st.success("Salvo!")
             st.rerun()
-        else:
-            st.session_state.status_salvamento = "Erro ao salvar ⚠️"
 
     tipo_pagina = st.selectbox(
         "Selecione o Modelo de Página",
@@ -278,7 +275,10 @@ with st.sidebar:
         value=dados_atuais["titulo"], 
         key=f"tit_principal_{tipo_pagina}"
     )
-    st.session_state.rascunhos[tipo_pagina]["titulo"] = titulo_principal
+    
+    if titulo_principal != dados_atuais["titulo"]:
+        st.session_state.rascunhos[tipo_pagina]["titulo"] = titulo_principal
+        aplicar_e_sintonizar(st.session_state.rascunhos)
     
     st.divider()
 
@@ -302,8 +302,7 @@ with st.sidebar:
                     st.session_state.rascunhos[tipo_pagina]["titulo"] = novo_tit
                     if novas_sec:
                         st.session_state.rascunhos[tipo_pagina]["secoes"] = novas_sec
-                    st.success("HTML importado com sucesso!")
-                    st.rerun()
+                    aplicar_e_sintonizar(st.session_state.rascunhos)
                 else:
                     st.warning("Cole o HTML no campo acima.")
 
@@ -331,14 +330,14 @@ secoes_ativas = st.session_state.rascunhos[tipo_pagina]["secoes"]
 if tipo_pagina != "F.A.Q.":
     if 'add_texto_sidebar' in locals() and add_texto_sidebar:
         secoes_ativas.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
-        st.rerun()
+        aplicar_e_sintonizar(st.session_state.rascunhos)
     if 'add_tabela_sidebar' in locals() and add_tabela_sidebar:
         secoes_ativas.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
-        st.rerun()
+        aplicar_e_sintonizar(st.session_state.rascunhos)
 else:
     if 'add_cat_sidebar' in locals() and add_cat_sidebar:
         secoes_ativas.append({'tipo': 'categoria_faq', 'nome_categoria': '', 'perguntas': []})
-        st.rerun()
+        aplicar_e_sintonizar(st.session_state.rascunhos)
 
 # ---------------------------------------------------------
 # CONTEÚDO PRINCIPAL
@@ -360,14 +359,19 @@ if tipo_pagina != "F.A.Q.":
             with st.expander(f"Seção {num_secao} [Texto/Lista]: {titulo_exibicao}", expanded=True):
                 col1, col2 = st.columns([4, 1])
                 with col1:
-                    secoes_ativas[i]['titulo'] = st.text_input(f"Título da Seção {num_secao}", value=secao['titulo'], key=f"tit_{tipo_pagina}_{i}")
-                    secoes_ativas[i]['conteudo'] = st.text_area(f"Conteúdo", value=secao['conteudo'], key=f"cont_{tipo_pagina}_{i}", height=120)
+                    novo_tit_sec = st.text_input(f"Título da Seção {num_secao}", value=secao['titulo'], key=f"tit_{tipo_pagina}_{i}")
+                    novo_cont_sec = st.text_area(f"Conteúdo", value=secao['conteudo'], key=f"cont_{tipo_pagina}_{i}", height=120)
+                    
+                    if novo_tit_sec != secao['titulo'] or novo_cont_sec != secao['conteudo']:
+                        secoes_ativas[i]['titulo'] = novo_tit_sec
+                        secoes_ativas[i]['conteudo'] = novo_cont_sec
+                        aplicar_e_sintonizar(st.session_state.rascunhos)
                 with col2:
                     st.write("")
                     st.write("")
                     if st.button("🗑️ Remover", key=f"del_{tipo_pagina}_{i}"):
                         secoes_ativas.pop(i)
-                        st.rerun()
+                        aplicar_e_sintonizar(st.session_state.rascunhos)
                 
                 t_sec = secoes_ativas[i]['titulo']
                 c_sec = converter_texto_para_html(secoes_ativas[i]['conteudo'])
@@ -381,15 +385,21 @@ if tipo_pagina != "F.A.Q.":
             with st.expander(f"Seção {num_secao} [Tabela]: {titulo_exibicao}", expanded=True):
                 col1, col2 = st.columns([4, 1])
                 with col1:
-                    secoes_ativas[i]['titulo'] = st.text_input(f"Título da Tabela {num_secao}", value=secao['titulo'], key=f"ttab_{tipo_pagina}_{i}")
-                    secoes_ativas[i]['cabecalho'] = st.text_input(f"Cabeçalho da Tabela (separado por vírgula)", value=secao.get('cabecalho', ''), key=f"cab_{tipo_pagina}_{i}")
-                    secoes_ativas[i]['linhas'] = st.text_area(f"Linhas da Tabela (cada linha em uma quebra, use a 1ª vírgula para separar colunas)", value=secao.get('linhas', ''), key=f"lin_{tipo_pagina}_{i}", height=100)
+                    novo_ttab = st.text_input(f"Título da Tabela {num_secao}", value=secao['titulo'], key=f"ttab_{tipo_pagina}_{i}")
+                    novo_cab = st.text_input(f"Cabeçalho da Tabela (separado por vírgula)", value=secao.get('cabecalho', ''), key=f"cab_{tipo_pagina}_{i}")
+                    novo_lin = st.text_area(f"Linhas da Tabela (cada linha em uma quebra, use a 1ª vírgula para separar colunas)", value=secao.get('linhas', ''), key=f"lin_{tipo_pagina}_{i}", height=100)
+                    
+                    if novo_ttab != secao['titulo'] or novo_cab != secao.get('cabecalho', '') or novo_lin != secao.get('linhas', ''):
+                        secoes_ativas[i]['titulo'] = novo_ttab
+                        secoes_ativas[i]['cabecalho'] = novo_cab
+                        secoes_ativas[i]['linhas'] = novo_lin
+                        aplicar_e_sintonizar(st.session_state.rascunhos)
                 with col2:
                     st.write("")
                     st.write("")
                     if st.button("🗑️ Remover", key=f"del_{tipo_pagina}_{i}"):
                         secoes_ativas.pop(i)
-                        st.rerun()
+                        aplicar_e_sintonizar(st.session_state.rascunhos)
                 
                 t_tab = secoes_ativas[i]['titulo']
                 cab_raw = secoes_ativas[i]['cabecalho']
@@ -428,12 +438,14 @@ else:
             col1, col2 = st.columns([4, 1])
             with col1:
                 cat_nome_input = st.text_input(f"Nome da Categoria {i+1}", value=cat_nome_atual, key=f"cat_nome_{tipo_pagina}_{i}")
-                secoes_ativas[i]['nome_categoria'] = cat_nome_input
+                if cat_nome_input != cat_nome_atual:
+                    secoes_ativas[i]['nome_categoria'] = cat_nome_input
+                    aplicar_e_sintonizar(st.session_state.rascunhos)
             with col2:
                 st.write("")
                 if st.button("🗑️ Remover Categoria", key=f"del_cat_{tipo_pagina}_{i}"):
                     secoes_ativas.pop(i)
-                    st.rerun()
+                    aplicar_e_sintonizar(st.session_state.rascunhos)
 
             st.markdown("##### Perguntas desta Categoria")
             if 'perguntas' not in secoes_ativas[i]:
@@ -447,19 +459,24 @@ else:
                     p_val = pergunta_obj.get('pergunta', '')
                     r_val = pergunta_obj.get('resposta', '')
                     
-                    perguntas_cat[p_idx]['pergunta'] = st.text_input(f"Pergunta {p_idx+1}", value=p_val, key=f"p_{tipo_pagina}_{i}_{p_idx}")
-                    perguntas_cat[p_idx]['resposta'] = st.text_area(f"Resposta {p_idx+1}", value=r_val, key=f"r_{tipo_pagina}_{i}_{p_idx}", height=80)
+                    p_input = st.text_input(f"Pergunta {p_idx+1}", value=p_val, key=f"p_{tipo_pagina}_{i}_{p_idx}")
+                    r_input = st.text_area(f"Resposta {p_idx+1}", value=r_val, key=f"r_{tipo_pagina}_{i}_{p_idx}", height=80)
+                    
+                    if p_input != p_val or r_input != r_val:
+                        perguntas_cat[p_idx]['pergunta'] = p_input
+                        perguntas_cat[p_idx]['resposta'] = r_input
+                        aplicar_e_sintonizar(st.session_state.rascunhos)
                 with cols_p[1]:
                     st.write("")
                     st.write("")
                     if st.button("❌", key=f"del_p_{tipo_pagina}_{i}_{p_idx}", help="Remover pergunta"):
                         perguntas_cat.pop(p_idx)
-                        st.rerun()
+                        aplicar_e_sintonizar(st.session_state.rascunhos)
                 st.divider()
 
             if st.button(f"➕ Adicionar Pergunta em '{cat_nome_input or f'Categoria {i+1}'}'", key=f"add_p_btn_{tipo_pagina}_{i}"):
                 perguntas_cat.append({'pergunta': '', 'resposta': ''})
-                st.rerun()
+                aplicar_e_sintonizar(st.session_state.rascunhos)
 
         if cat_nome_atual.strip():
             html_faq_gerado += f"""
@@ -493,15 +510,15 @@ if tipo_pagina != "F.A.Q.":
     with col_bot1:
         if st.button("➕ Adicionar Seção de Texto/Lista (Inferior)", use_container_width=True):
             secoes_ativas.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
-            st.rerun()
+            aplicar_e_sintonizar(st.session_state.rascunhos)
     with col_bot2:
         if st.button("📊 Adicionar Tabela (Inferior)", use_container_width=True):
             secoes_ativas.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
-            st.rerun()
+            aplicar_e_sintonizar(st.session_state.rascunhos)
 else:
     if st.button("➕ Adicionar Nova Categoria (Inferior)", use_container_width=True):
         secoes_ativas.append({'tipo': 'categoria_faq', 'nome_categoria': '', 'perguntas': []})
-        st.rerun()
+        aplicar_e_sintonizar(st.session_state.rascunhos)
 
 # ---------------------------------------------------------
 # MONTAGEM DO HTML COMPLETO
