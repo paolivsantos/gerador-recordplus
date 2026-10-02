@@ -161,6 +161,11 @@
             {
                 "tipo": "texto",
                 "titulo": "6. Propriedade Intelectual",
+                "conteudo": "6.1. Todas as obras, textos, fotografias, projetos, plantas, imagens, vídeos, ilustrações, ícones, tecnologias, links e demais conteúdos audiovisuais ou sonoros, incluindo o software do RecordPlus, desenhos gráficos e códigos fonte, são de propriedade exclusiva do RecordPlus ou de terceiro que tenha autorizado sua utilização, estando protegidos pelas leis e tratados internacionais, vedada sua cópia, reprodução, ou qualquer outro tipo de utilização, ficando os infratores sujeitos às sanções civis e criminais correspondentes, nos termos das Leis 9.279/96, 9.609/98, 9.610/98.\n\n6.2. As marcas, os nomes comerciais ou logotipos de qualquer espécie apresentados por meio dos Serviços RecordPlus são de propriedade do RecordPlus ou de terceiro que permitiu o seu uso, de modo que a utilização dos Serviços RecordPlus e a Assinatura objeto deste Contrato não consistem em autorização para que o Assinante possa citar as tais marcas, nomes comerciais e logotipos."
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
                 "conteudo": ""
             }
         ]
