@@ -291,7 +291,7 @@
                     },
                     {
                         "pergunta": "Compra não autorizada",
-                        "resposta": ""
+                        "resposta": "Quando o cliente informa os dados do cartão e consta como ‘Não Autorizado’, isso pode estar acontecendo por qualquer um dos seguintes motivos:\n\n- Saldo insuficiente;\n- Bloqueio para compras online;\n- Dados incorretos/expirados;\n- Bloqueio pela área de segurança do próprio banco;\n- Bloqueio para transação de zero reais, que verifica a validade do cartão inserido.\n\nNossa orientação é que você entre em contato diretamente com a instituição financeira e verifique o que está acontecendo. Peça para que eles analisem apenas essas tentativas. Você também pode tentar inserir o cartão digital do seu banco ao invés do cartão físico.\n\nAlém disso, verifique se você selecionou a opção de forma de pagamento correta: Débito ou Crédito."
                     }
                 ]
             },
