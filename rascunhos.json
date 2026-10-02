@@ -195,6 +195,11 @@
             },
             {
                 "tipo": "categoria_faq",
+                "nome_categoria": "Conteúdo",
+                "perguntas": []
+            },
+            {
+                "tipo": "categoria_faq",
                 "nome_categoria": "",
                 "perguntas": []
             }
