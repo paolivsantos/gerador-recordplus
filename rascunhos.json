@@ -189,6 +189,10 @@
                 "perguntas": [
                     {
                         "pergunta": "O que é o RecordPlus?",
+                        "resposta": "O RecordPlus é uma plataforma de streaming de conteúdos audiovisuais e possui uma variedade de produtos para toda a família. Para acessar basta fazer o cadastro e escolher entre o plano Play, que dá acesso a um catálogo limitado de conteúdo, ou o plano RecordPlus para ter acesso ao catálogo completo."
+                    },
+                    {
+                        "pergunta": "",
                         "resposta": ""
                     }
                 ]
