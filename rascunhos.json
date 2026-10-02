@@ -205,6 +205,11 @@
             },
             {
                 "tipo": "categoria_faq",
+                "nome_categoria": "Informações Técnicas",
+                "perguntas": []
+            },
+            {
+                "tipo": "categoria_faq",
                 "nome_categoria": "",
                 "perguntas": []
             }
