@@ -520,6 +520,10 @@
                     {
                         "pergunta": "Minha conta ou assinatura serão afetados?",
                         "resposta": ""
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             }
