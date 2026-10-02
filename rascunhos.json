@@ -67,7 +67,13 @@
     },
     "Termos de Uso": {
         "titulo": "Termos de Uso RecordPlus",
-        "secoes": []
+        "secoes": [
+            {
+                "tipo": "texto",
+                "titulo": "",
+                "conteudo": ""
+            }
+        ]
     },
     "Contrato de Assinatura": {
         "titulo": "Contrato de Assinatura RecordPlus",
