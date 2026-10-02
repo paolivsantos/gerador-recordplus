@@ -218,6 +218,10 @@
                     {
                         "pergunta": "Quantos perfis posso adicionar à minha conta?",
                         "resposta": "Você pode adicionar até 5 (cinco) perfis, limitado em até 4 (quatro) pessoas assistindo simultaneamente em um mesmo cadastro."
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             },
