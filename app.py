@@ -50,6 +50,15 @@ def salvar_rascunhos_github(dados_dict, sha=None):
         "Accept": "application/vnd.github.v3+json"
     }
     
+    # Se o SHA não foi fornecido na sessão, buscamos o SHA atual do arquivo no GitHub para evitar o erro 422
+    if not sha:
+        try:
+            resp_get = requests.get(url, headers=headers)
+            if resp_get.status_code == 200:
+                sha = resp_get.json().get("sha")
+        except Exception:
+            pass
+
     conteudo_str = json.dumps(dados_dict, ensure_ascii=False, indent=4)
     conteudo_base64 = base64.b64encode(conteudo_str.encode("utf-8")).decode("utf-8")
     
@@ -59,7 +68,7 @@ def salvar_rascunhos_github(dados_dict, sha=None):
         "branch": GITHUB_BRANCH
     }
     
-    # Se temos um SHA válido, enviamos. Se for None, o campo é omitido para permitir a criação do arquivo do zero.
+    # Se obtivemos o SHA (o arquivo já existe), incluímos no payload
     if sha:
         payload["sha"] = sha
         
@@ -69,7 +78,6 @@ def salvar_rascunhos_github(dados_dict, sha=None):
         if response.status_code in [200, 201]:
             return True, response.json().get("content", {}).get("sha")
         else:
-            # Exibe o erro exato retornado pelo GitHub na interface do Streamlit
             try:
                 err_msg = response.json().get('message', response.text)
             except:
