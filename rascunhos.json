@@ -465,7 +465,11 @@
                     },
                     {
                         "pergunta": "Vídeo só carregando ou travando no smartphone. Como resolver?",
-                        "resposta": "Se o travamento ou mau funcionamento ocorre apenas no seu smartphone, desinstale e instale novamente o app no aparelho e também limpe o cache dele na área de configurações. Se os travamentos persistirem, procure-nos pelos canais de atendimento já informando os seguintes dados:\n\n1. Modelo do smartphone, versão do sistema operacional e tipo de conexão utilizada (Wi-Fi ou 4G/5G);\n2. Os conteúdos que estão travando;\n3. Se aparecer alguma mensagem de erro, tire uma foto e encaminhe para nós."
+                        "resposta": "Se o travamento ou mau funcionamento ocorre apenas no seu smartphone, desinstale e instale novamente o app no aparelho e também limpe o cache dele na área de configurações. Se os travamentos persistirem, procure-nos pelos canais de atendimento já informando os seguintes dados:\n\n- 1. Modelo do smartphone, versão do sistema operacional e tipo de conexão utilizada (Wi-Fi ou 4G/5G);\n- 2. Os conteúdos que estão travando;\n- 3. Se aparecer alguma mensagem de erro, tire uma foto e encaminhe para nós.\n\n**Atendimento RecordPlus:**\n\n- E-mail: suporte@recordplus.com\n- Telefone: 0800 759 3789 (de segunda à sexta-feira, das 8h até 23h)\n- Redes Sociais:\n - https://www.facebook.com/recordplus\n - https://www.instagram.com/recordplus"
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             },
