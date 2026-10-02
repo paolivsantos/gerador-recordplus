@@ -506,7 +506,7 @@
                         "resposta": "Nada. Seus planos e formas de pagamento continuam os mesmos, sem necessidade de alteração."
                     },
                     {
-                        "pergunta": "",
+                        "pergunta": "Preciso mudar meu plano ou forma de pagamento?",
                         "resposta": ""
                     }
                 ]
