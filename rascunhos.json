@@ -32,6 +32,11 @@
                 "titulo": "",
                 "cabecalho": " Tipo de Cookie, O que eles fazem?",
                 "linhas": "Necessários, São cookies essenciais para viabilizar o adequado funcionamento dos nossos websites, aplicativos e plataformas, assim como para permitir que você faça uso de todas as funcionalidades disponíveis.\nFuncionais, São cookies que nos ajudam a entender como os visitantes interagem com os nossos websites, aplicativos e plataformas, fornecendo informações sobre as áreas visitadas, o tempo de visita ao site e quaisquer problemas eventualmente encontrados.\nDesempenho, São cookies que permitem lembrarmos das suas escolhas anteriores, como, por exemplo idioma de navegação. São responsáveis por proporcionar uma experiência personalizada.\nMarketing, São cookies utilizados para fornecer mais conteúdo relevante e específico para os seus interesses. Podem, ainda, ser utilizados para apresentar publicidade com um maior direcionamento ou limitar o número que esta é veiculada. Também, permitem a medição da eficácia de uma campanha lançada."
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
+                "conteudo": ""
             }
         ]
     },
