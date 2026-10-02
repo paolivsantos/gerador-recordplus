@@ -314,7 +314,7 @@
                         "resposta": "O **RecordPlus** não cobra taxa de cancelamento. Entretanto, caso a mensalidade já tenha sido cobrada, o usuário não será estornado e terá acesso aos conteúdos do Plano até o fim do ciclo. Neste caso, no mês subsequente, nenhuma cobrança será feita novamente e o acesso ao serviço será bloqueado."
                     },
                     {
-                        "pergunta": "",
+                        "pergunta": "Poderei retornar ao RecordPlus após cancelar minha conta?",
                         "resposta": ""
                     }
                 ]
