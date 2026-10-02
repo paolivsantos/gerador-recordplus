@@ -430,6 +430,10 @@
                     {
                         "pergunta": "Quais são os requisitos de sistema para assistir ao RecordPlus?",
                         "resposta": "Navegadores e sistemas operacionais suportados: Google Chrome versão 51 (ou superior); Mozilla Firefox versão 54 (ou superior); Opera versão 38 (ou superior); Safari no Mac OS X (ou versões mais recentes); Microsoft Edge 15 (ou superior).\n\n- Sistemas operacionais em dispositivos móveis: Android versão 5.0 API 21 ou superior. iOS 15 ou superior.\n- Smart TV´s: LG webOS e Samsung/Tizen: Modelos fabricados nos últimos 5 anos com sistema operacional atualizado.\n- Resolução: assista ao conteúdo em alta definição se sua conexão com a Internet for de 5 megabits por segundo ou superior."
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             },
