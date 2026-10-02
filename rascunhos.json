@@ -407,6 +407,10 @@
                     },
                     {
                         "pergunta": "Posso assistir às edições passadas?",
+                        "resposta": "Você pode conferir quais programas e edições passadas dos seus realitys favoritos estão à disposição em nosso catálogo. Dependendo do programa e/ou formato, é possível rever os episódios e até mesmo acessar trechos específicos e marcantes das edições já exibidas.\n\nNo entanto, alguns títulos podem ser removidos devido a regras de distribuição dos produtores e/ou embargos jurídicos. Por isso, nem todos os realitys e/ou edições dos realitys podem estar disponíveis."
+                    },
+                    {
+                        "pergunta": "",
                         "resposta": ""
                     }
                 ]
