@@ -11,6 +11,11 @@
                 "tipo": "texto",
                 "titulo": "Atualizações",
                 "conteudo": "É importante assegurar a leitura deste documento periodicamente. Este aviso de privacidade poderá ser alterado a qualquer momento, tornando-se efetiva de forma imediata para garantir o nosso compromisso de transparência com você. O RecordPlus conterá sempre a versão mais atualizada do aviso de privacidade. Por favor, verifique esta página periodicamente para saber sobre possíveis mudanças. Você poderá verificar a última atualização tomando como referência a data no final desta política. Você sempre será avisado sobre qualquer alteração, seja através de aviso nos serviços RecordPlus, pelo envio de e-mail, notificação instantânea (push), pop-up na plataforma, ou através de outros meios."
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
+                "conteudo": ""
             }
         ]
     },
