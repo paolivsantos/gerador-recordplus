@@ -185,6 +185,11 @@
         "secoes": [
             {
                 "tipo": "categoria_faq",
+                "nome_categoria": "Gerenciamento",
+                "perguntas": []
+            },
+            {
+                "tipo": "categoria_faq",
                 "nome_categoria": "",
                 "perguntas": []
             }
