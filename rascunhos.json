@@ -262,7 +262,7 @@
                         "resposta": "Para pagar com Pix, acesse sua conta pelo site do **RecordPlus** em: [https://www.recordplus.com/](https://www.recordplus.com/).\n\nO método de pagamento via Pix não acontece de forma recorrente, ou seja, todos os meses você precisará entrar na conta e gerar um novo QR code e pagá-lo para liberar seu acesso como assinante. Depois que o Pix é compensado, o acesso é liberado na hora.\n\nAlém disso, reforçamos que o cliente deve pagar unicamente via QR Code.\n\n_Nunca faça o Pix com outros dados, como CPNJ, pois isso não liberará seu acesso como assinante._"
                     },
                     {
-                        "pergunta": "",
+                        "pergunta": "Como alterar o cartão cadastrado no RecordPlus?",
                         "resposta": ""
                     }
                 ]
