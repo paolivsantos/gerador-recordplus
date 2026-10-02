@@ -127,7 +127,13 @@
     },
     "Contrato de Assinatura": {
         "titulo": "Contrato de Assinatura RecordPlus",
-        "secoes": []
+        "secoes": [
+            {
+                "tipo": "texto",
+                "titulo": "",
+                "conteudo": ""
+            }
+        ]
     },
     "F.A.Q.": {
         "titulo": "F.A.Q.",
