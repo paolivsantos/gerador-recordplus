@@ -81,6 +81,11 @@
             {
                 "tipo": "texto",
                 "titulo": "3. Usuários RecordPlus",
+                "conteudo": "3.1. Quem pode ser Usuário dos Serviços RecordPlus\n\nPara obter o acesso aos Serviços RecordPlus, mediante o cadastro no Cadastro RecordPlus e se tornar um Usuário do Serviço RecordPlus, você deverá ter, no mínimo, 18 (dezoito) anos completos - ou ser maior de idade em seu Estado, território ou país.\n\nMenores de 18 anos ou da idade de maioridade aplicável em referido Estado, território ou país ou aqueles que necessitem de representação ou assistência na forma da lei, somente poderão utilizar o Serviço RecordPlus caso estejam devidamente representados ou assistidos por seus pais ou representantes legais, sempre por meio do uso do Cadastro RecordPlus dos respectivos pais ou responsáveis e segundo os presentes T&C.\n\nPela aceitação destes T&C, você declara ser maior de 18 anos e/ou maior de idade em seu Estado, território ou país, ou menor emancipado. Você afirma, ainda, ser plenamente capaz de consentir com todas as disposições presentes, condições, obrigações, afirmações, representações e garantias descritas nestes T&C, respeitando-as e cumprindo-as em sua totalidade. Os Serviços RecordPlus não foram idealizados para menores de 18 anos. Se você tiver menos de 18 anos, não deverá utilizar os Serviços RecordPlus."
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
                 "conteudo": ""
             }
         ]
