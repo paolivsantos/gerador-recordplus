@@ -131,6 +131,11 @@
             {
                 "tipo": "texto",
                 "titulo": "",
+                "conteudo": "Este CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE DISPONIBILIZAÇÃO DE CONTEÚDO E OUTRAS AVENÇAS (\"Contrato\") é celebrado entre RÁDIO E TELEVISÃO RECORD S/A. , inscrita no CNPJ/MF sob nº 60.628.369/0006-80, estabelecida na Alameda Ministro Rocha de Azevedo, nº 395, 7º andar, Bairro Cerqueira Cesar, São Paulo/SP, CEP 01410-001 (“RecordPlus”), e o “Assinante”, pessoa física identificada conforme os dados fornecidos no cadastro junto à Plataforma RecordPlus (“Plataforma RecordPlus”), cujos termos e condições regem-se pelas cláusulas a seguir, as quais obrigam as Partes, por si e por seus sucessores a qualquer título, na melhor forma de direito."
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
                 "conteudo": ""
             }
         ]
