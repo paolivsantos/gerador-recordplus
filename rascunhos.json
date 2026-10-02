@@ -511,6 +511,10 @@
                     },
                     {
                         "pergunta": "Os preços vão mudar no RecordPlus?",
+                        "resposta": "Não vão mudar, os preços dos planos mensal, semestral e anual continuarão os mesmos."
+                    },
+                    {
+                        "pergunta": "",
                         "resposta": ""
                     }
                 ]
