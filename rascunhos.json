@@ -388,7 +388,12 @@
             {
                 "tipo": "categoria_faq",
                 "nome_categoria": "Realities Shows",
-                "perguntas": []
+                "perguntas": [
+                    {
+                        "pergunta": "",
+                        "resposta": ""
+                    }
+                ]
             },
             {
                 "tipo": "categoria_faq",
