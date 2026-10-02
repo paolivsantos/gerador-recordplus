@@ -331,7 +331,7 @@
                     },
                     {
                         "pergunta": "Botão de Deletar Conta",
-                        "resposta": ""
+                        "resposta": "Na área de configuração da sua conta, você verá que existe um botão de Deletar Conta. Esse botão não cancela a sua assinatura, apenas apaga os seus dados do nosso sistema. Portanto, se você clicar nele enquanto a sua assinatura estiver ativa, pode acontecer de você continuar sendo cobrado nos meses seguintes.\n\nPara cancelar a assinatura, clique no seu perfil, vá até o item ‘Plano’ e clique em ‘cancelamento de assinatura’.\n\nSe você assinou via Apple ou Google, o cancelamento deverá ser solicitado via loja de aplicativos através de seu dispositivo."
                     }
                 ]
             },
