@@ -22,7 +22,7 @@ st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas, tabelas e FAQs de forma simples.")
 
 # ---------------------------------------------------------
-# FUNÇÕES DE INTEGRAÇÃO COM O GITHUB (Padrão Sintonizado)
+# FUNÇÕES DE INTEGRAÇÃO COM O GITHUB (Padrão Automático)
 # ---------------------------------------------------------
 def carregar_do_github():
     if not GITHUB_TOKEN or not GITHUB_REPO:
@@ -58,7 +58,6 @@ def salvar_no_github(dados_dict):
         "Content-Type": "application/json"
     }
     
-    # Busca o SHA atual para permitir atualizações corretas (evita erro 422)
     _, sha_atual = carregar_do_github()
     
     json_str = json.dumps(dados_dict, ensure_ascii=False, indent=4)
@@ -254,13 +253,6 @@ with st.sidebar:
     st.header("Configurações")
     
     st.info("☁️ Sincronizado automaticamente com o GitHub!")
-    
-    if st.button("💾 Sincronizar Agora", use_container_width=True, type="primary"):
-        sucesso = salvar_no_github(st.session_state.rascunhos)
-        if sucesso:
-            st.toast("Sincronizado com sucesso!", icon="☁️")
-            st.success("Salvo!")
-            st.rerun()
 
     tipo_pagina = st.selectbox(
         "Selecione o Modelo de Página",
@@ -306,14 +298,6 @@ with st.sidebar:
                 else:
                     st.warning("Cole o HTML no campo acima.")
 
-        st.divider()
-        st.subheader("➕ Adicionar Seções")
-        add_texto_sidebar = st.button("Adicionar Texto/Lista", use_container_width=True)
-        add_tabela_sidebar = st.button("Adicionar Tabela", use_container_width=True)
-    else:
-        st.subheader("➕ Adicionar Categoria na FAQ")
-        add_cat_sidebar = st.button("Adicionar Categoria", use_container_width=True)
-
     st.divider()
     
     with st.expander("💡 Guia Rápido de Formatação", expanded=True):
@@ -327,25 +311,13 @@ with st.sidebar:
 
 secoes_ativas = st.session_state.rascunhos[tipo_pagina]["secoes"]
 
-if tipo_pagina != "F.A.Q.":
-    if 'add_texto_sidebar' in locals() and add_texto_sidebar:
-        secoes_ativas.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
-        aplicar_e_sintonizar(st.session_state.rascunhos)
-    if 'add_tabela_sidebar' in locals() and add_tabela_sidebar:
-        secoes_ativas.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
-        aplicar_e_sintonizar(st.session_state.rascunhos)
-else:
-    if 'add_cat_sidebar' in locals() and add_cat_sidebar:
-        secoes_ativas.append({'tipo': 'categoria_faq', 'nome_categoria': '', 'perguntas': []})
-        aplicar_e_sintonizar(st.session_state.rascunhos)
-
 # ---------------------------------------------------------
 # CONTEÚDO PRINCIPAL
 # ---------------------------------------------------------
 st.subheader(f"Conteúdo: {tipo_pagina}")
 
 if not secoes_ativas:
-    st.info(f"Nenhuma seção adicionada para **{tipo_pagina}** ainda. Use os botões na barra lateral.")
+    st.info(f"Nenhuma seção adicionada para **{tipo_pagina}** ainda. Use os botões abaixo para começar.")
 
 html_secoes_geradas = ""
 
@@ -443,7 +415,7 @@ else:
                     aplicar_e_sintonizar(st.session_state.rascunhos)
             with col2:
                 st.write("")
-                if st.button("🗑️ Remover Categoria", key=f"del_cat_{tipo_pagina}_{i}"):
+                if st.button("🗑️️ Remover Categoria", key=f"del_cat_{tipo_pagina}_{i}"):
                     secoes_ativas.pop(i)
                     aplicar_e_sintonizar(st.session_state.rascunhos)
 
@@ -508,15 +480,15 @@ st.divider()
 if tipo_pagina != "F.A.Q.":
     col_bot1, col_bot2 = st.columns(2)
     with col_bot1:
-        if st.button("➕ Adicionar Seção de Texto/Lista (Inferior)", use_container_width=True):
+        if st.button("➕ Adicionar Seção de Texto/Lista", use_container_width=True):
             secoes_ativas.append({'tipo': 'texto', 'titulo': '', 'conteudo': ''})
             aplicar_e_sintonizar(st.session_state.rascunhos)
     with col_bot2:
-        if st.button("📊 Adicionar Tabela (Inferior)", use_container_width=True):
+        if st.button("📊 Adicionar Tabela", use_container_width=True):
             secoes_ativas.append({'tipo': 'tabela', 'titulo': '', 'cabecalho': '', 'linhas': ''})
             aplicar_e_sintonizar(st.session_state.rascunhos)
 else:
-    if st.button("➕ Adicionar Nova Categoria (Inferior)", use_container_width=True):
+    if st.button("➕ Adicionar Nova Categoria de FAQ", use_container_width=True):
         secoes_ativas.append({'tipo': 'categoria_faq', 'nome_categoria': '', 'perguntas': []})
         aplicar_e_sintonizar(st.session_state.rascunhos)
 
