@@ -327,6 +327,10 @@
                     },
                     {
                         "pergunta": "Prazo de reembolso",
+                        "resposta": "Caso o reembolso tenha sido autorizado pela equipe financeira, o valor será devolvido em até 60 dias, dependendo do banco e bandeira do cartão.\n\nPara assinaturas realizadas via Apple e Google, para mais informações, entre em contato com o suporte ao cliente em sua loja de aplicativos."
+                    },
+                    {
+                        "pergunta": "",
                         "resposta": ""
                     }
                 ]
