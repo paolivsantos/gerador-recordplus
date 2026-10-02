@@ -507,6 +507,10 @@
                     },
                     {
                         "pergunta": "Preciso mudar meu plano ou forma de pagamento?",
+                        "resposta": "Não é necessário, o fluxo de cobrança continuará o mesmo!"
+                    },
+                    {
+                        "pergunta": "",
                         "resposta": ""
                     }
                 ]
