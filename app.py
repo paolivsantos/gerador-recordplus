@@ -1,7 +1,17 @@
 import streamlit as st
 import re
 import json
+import base64
+import requests
 from html.parser import HTMLParser
+
+# ---------------------------------------------------------
+# CONFIGURAÇÕES DO GITHUB (Lidas dos Secrets ou variáveis)
+# ---------------------------------------------------------
+GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
+GITHUB_REPO = "paolivsantos/gerador-recordplus"
+GITHUB_BRANCH = "main"
+ARQUIVO_JSON_GITHUB = "rascunhos.json"
 
 st.set_page_config(
     page_title="Gerador de HTML - RecordPlus",
@@ -13,27 +23,78 @@ st.title("Gerador de HTML Dinâmico - RecordPlus")
 st.write("Crie e ajuste o conteúdo da página estruturando seções, listas, tabelas e FAQs de forma simples.")
 
 # ---------------------------------------------------------
+# FUNÇÕES DE INTEGRAÇÃO COM O GITHUB
+# ---------------------------------------------------------
+def carregar_rascunhos_github():
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{ARQUIVO_JSON_GITHUB}"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            file_data = response.json()
+            file_content = base64.b64decode(file_data["content"]).decode("utf-8")
+            return json.loads(file_content), file_data.get("sha")
+        elif response.status_code == 404:
+            return None, None
+        else:
+            st.error(f"Erro ao buscar do GitHub (Status {response.status_code}): {response.text}")
+            return None, None
+    except Exception as e:
+        st.error(f"Erro de conexão com o GitHub: {e}")
+        return None, None
+
+def salvar_rascunhos_github(dados_dict, sha=None):
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{ARQUIVO_JSON_GITHUB}"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    
+    conteudo_str = json.dumps(dados_dict, ensure_ascii=False, indent=4)
+    conteudo_base64 = base64.b64encode(conteudo_str.encode("utf-8")).decode("utf-8")
+    
+    payload = {
+        "message": "Atualização automática de rascunhos via Gerador RecordPlus",
+        "content": conteudo_base64,
+        "branch": GITHUB_BRANCH
+    }
+    if sha:
+        payload["sha"] = sha
+        
+    try:
+        response = requests.put(url, headers=headers, json=payload)
+        if response.status_code in [200, 201]:
+            return True, response.json().get("content", {}).get("sha")
+        else:
+            st.error(f"Erro ao salvar no GitHub (Status {response.status_code}): {response.text}")
+            return False, sha
+    except Exception as e:
+        st.error(f"Erro de conexão ao salvar no GitHub: {e}")
+        return False, sha
+
+# ---------------------------------------------------------
 # INICIALIZAÇÃO DO ESTADO GLOBAL DE RASCUNHOS
 # ---------------------------------------------------------
 if 'rascunhos' not in st.session_state:
-    st.session_state.rascunhos = {
-        "Aviso de Privacidade": {
-            "titulo": "Aviso de Privacidade RecordPlus", 
-            "secoes": []
-        },
-        "Termos de Uso": {
-            "titulo": "Termos de Uso RecordPlus", 
-            "secoes": []
-        },
-        "Contrato de Assinatura": {
-            "titulo": "Contrato de Assinatura RecordPlus", 
-            "secoes": []
-        },
-        "F.A.Q.": {
-            "titulo": "F.A.Q.", 
-            "secoes": []
+    # Tenta carregar automaticamente do GitHub ao iniciar
+    dados_git, sha_git = carregar_rascunhos_github()
+    if dados_git:
+        st.session_state.rascunhos = dados_git
+        st.session_state.github_sha = sha_git
+    else:
+        st.session_state.rascunhos = {
+            "Aviso de Privacidade": {"titulo": "Aviso de Privacidade RecordPlus", "secoes": []},
+            "Termos de Uso": {"titulo": "Termos de Uso RecordPlus", "secoes": []},
+            "Contrato de Assinatura": {"titulo": "Contrato de Assinatura RecordPlus", "secoes": []},
+            "F.A.Q.": {"titulo": "F.A.Q.", "secoes": []}
         }
-    }
+        st.session_state.github_sha = None
+
+if 'github_sha' not in st.session_state:
+    st.session_state.github_sha = None
 
 # ---------------------------------------------------------
 # PARSER PARA IMPORTAR HTML EXISTENTE
@@ -195,42 +256,40 @@ with st.sidebar:
     st.divider()
 
     # ---------------------------------------------------------
-    # GERENCIAMENTO DE RASCUNHOS (JSON)
+    # GERENCIAMENTO DE RASCUNHOS (GITHUB & LOCAL)
     # ---------------------------------------------------------
-    st.subheader("💾 Gerenciar Rascunhos")
+    st.subheader("💾 Gerenciamento na Nuvem")
     
+    col_g1, col_g2 = st.columns(2)
+    with col_g1:
+        if st.button("☁️ Salvar no GitHub", use_container_width=True, type="primary"):
+            sucesso, novo_sha = salvar_rascunhos_github(st.session_state.rascunhos, st.session_state.github_sha)
+            if sucesso:
+                st.session_state.github_sha = novo_sha
+                st.success("Salvo no GitHub!")
+    with col_g2:
+        if st.button("🔄 Puxar do GitHub", use_container_width=True):
+            dados_git, sha_git = carregar_rascunhos_github()
+            if dados_git:
+                st.session_state.rascunhos = dados_git
+                st.session_state.github_sha = sha_git
+                st.success("Atualizado!")
+                st.rerun()
+            else:
+                st.warning("Nenhum dado encontrado no GitHub.")
+
+    st.write("")
+    
+    # Manutenção opcional do JSON local caso queira baixar por backup
     json_str = json.dumps(st.session_state.rascunhos, ensure_ascii=False, indent=4)
     st.download_button(
-        label="📥 Baixar Rascunhos (JSON)",
+        label="📥 Baixar Backup JSON",
         data=json_str,
         file_name="rascunhos_recordplus.json",
         mime="application/json",
         use_container_width=True,
-        help="Baixe um arquivo contendo todas as suas alterações em todas as abas."
+        help="Baixe um arquivo de backup contendo todas as alterações."
     )
-
-    st.write("")
-    
-    arquivo_carregado = st.file_uploader(
-        "Selecionar arquivo JSON", 
-        type=["json"], 
-        key="uploader_rascunho_json",
-        help="Escolha o arquivo de rascunho salvo anteriormente.",
-        label_visibility="collapsed"
-    )
-
-    if arquivo_carregado is not None:
-        if st.button("📂 Processar e Carregar Rascunho", type="primary", key="btn_processar_json", use_container_width=True):
-            try:
-                rascunhos_carregados = json.load(arquivo_carregado)
-                if isinstance(rascunhos_carregados, dict):
-                    st.session_state.rascunhos = rascunhos_carregados
-                    st.success("Rascunhos carregados com sucesso!")
-                    st.rerun()
-                else:
-                    st.error("O arquivo JSON não possui o formato esperado.")
-            except Exception as e:
-                st.error(f"Erro ao ler o arquivo: {e}")
 
     st.divider()
     
@@ -350,7 +409,6 @@ if tipo_pagina != "F.A.Q.":
                     html_tabela += '\n            <tbody>'
                     for l in linhas_raw:
                         if l.strip():
-                            # Considera APENAS A PRIMEIRA VÍRGULA para separar as colunas da tabela
                             colunas = [c.strip() for c in l.split(',', 1)]
                             html_tabela += '\n                <tr>'
                             for td in colunas:
@@ -403,7 +461,6 @@ else:
                 perguntas_cat.append({'pergunta': '', 'resposta': ''})
                 st.rerun()
 
-        # Montagem do HTML da FAQ
         if cat_nome_atual.strip():
             html_faq_gerado += f"""
     <div class="faq-category-wrapper">
@@ -447,7 +504,7 @@ else:
         st.rerun()
 
 # ---------------------------------------------------------
-# MONTAGEM DO HTML COMPLETO COM SETAS E SANFONA NAS SUBCATEGORIAS
+# MONTAGEM DO HTML COMPLETO
 # ---------------------------------------------------------
 html_gerado = f"""<!DOCTYPE html>
 <html data-theme="dark" lang="pt-br">
@@ -467,7 +524,6 @@ html_gerado = f"""<!DOCTYPE html>
         th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
         th {{ background-color: #5c4a76; color: #ffffff; }}
         
-        /* Centralização e espaçamento limpo dos links do rodapé entre os separadores */
         .bottom-footer, .bottom-footer .list-footer {{
             text-align: center !important;
             display: flex;
@@ -492,16 +548,13 @@ html_gerado = f"""<!DOCTYPE html>
             opacity: 0.7;
         }}
         
-        /* Estilização da FAQ conforme especificações */
         .faq-category-wrapper {{ margin-bottom: 16px; }}
         
-        /* Remove marcadores padrão */
         details.faq-category-accordion summary::-webkit-details-marker,
         details.faq-item-accordion summary::-webkit-details-marker {{ display: none; }}
         details.faq-category-accordion > summary,
         details.faq-item-accordion > summary {{ list-style: none; }}
 
-        /* Categoria principal com 20px e Seta Indicativa */
         .faq-category-accordion > summary.faq-category-title {{
             font-size: 20px;
             font-weight: 700;
@@ -526,7 +579,6 @@ html_gerado = f"""<!DOCTYPE html>
             transform: translateY(-50%) rotate(180deg);
         }}
 
-        /* Caixa de fundo para as subcategorias */
         .faq-items-box {{
             background-color: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -536,7 +588,6 @@ html_gerado = f"""<!DOCTYPE html>
             margin-bottom: 12px;
         }}
 
-        /* Subcategorias (Perguntas) e Respostas com 16px e Seta Indicativa */
         details.faq-item-accordion {{
             margin-bottom: 8px;
             border-radius: 6px;
@@ -610,7 +661,6 @@ html_gerado = f"""<!DOCTYPE html>
     </footer>
 
     <script>
-        // Script para fechar as outras subcategorias ao abrir uma nova dentro da mesma caixa
         document.addEventListener('DOMContentLoaded', () => {{
             const itemAccordions = document.querySelectorAll('details.faq-item-accordion');
             itemAccordions.forEach((item) => {{
