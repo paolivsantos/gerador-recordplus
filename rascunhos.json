@@ -46,6 +46,11 @@
             {
                 "tipo": "texto",
                 "titulo": "Segurança do Usuário",
+                "conteudo": "Sua conta é protegida por senha, para que somente você tenha acesso as suas informações pessoais. A senha é secreta e por isso recomendamos a você que não revele a ninguém. O RecordPlus nunca irá solicitar sua senha, seja por e-mail ou telefone. Certifique-se de sempre desconectar da sua sessão na janela do seu navegador, principalmente em dispositivos públicos como computadores de biblioteca ou do trabalho.\n\nO RecordPlus emprega medidas administrativas, lógicas, gerenciais e físicas para proteger suas informações pessoais contra perdas e roubos e acessos não autorizados. Entretanto, nenhuma medida garante 100% de proteção.\n\nTambém adotamos controles para reduzir riscos de vinculação indevida de contas, acessos não autorizados, exposição excessiva de dados e inconsistências durante processos de migração, integração, autenticação e gestão da assinatura de acesso à plataforma, inclusive em ambientes de teste, homologação e produção.\n\nSeus dados pessoais serão mantidos pelo período necessário para cumprir as finalidades informadas neste Aviso, inclusive para gestão da conta, autenticação, assinatura de acesso ao RecordPlus, prestação dos serviços, cobranças, faturamento, suporte, prevenção a fraudes, segurança, cumprimento de obrigações legais ou regulatórias e exercício regular de direitos. Quando não forem mais necessários, os dados poderão ser eliminados ou anonimizados, observadas as hipóteses legais de conservação."
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
                 "conteudo": ""
             }
         ]
