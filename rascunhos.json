@@ -524,6 +524,10 @@
                     {
                         "pergunta": "Preciso baixar um novo aplicativo ou fazer alguma reinstalação?",
                         "resposta": "Não precisa se preocupar! A atualização será feita automaticamente pelo seu dispositivo, como já acontece com outras atualizações de app."
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             }
