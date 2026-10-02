@@ -190,6 +190,11 @@
             },
             {
                 "tipo": "categoria_faq",
+                "nome_categoria": "Assinatura",
+                "perguntas": []
+            },
+            {
+                "tipo": "categoria_faq",
                 "nome_categoria": "",
                 "perguntas": []
             }
