@@ -40,6 +40,11 @@
             },
             {
                 "tipo": "texto",
+                "titulo": "Compartilhamento de Dados com Terceiros",
+                "conteudo": ""
+            },
+            {
+                "tipo": "texto",
                 "titulo": "",
                 "conteudo": ""
             }
