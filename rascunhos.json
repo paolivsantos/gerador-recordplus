@@ -188,7 +188,7 @@
                 "nome_categoria": "Gerenciamento",
                 "perguntas": [
                     {
-                        "pergunta": "",
+                        "pergunta": "O que é o RecordPlus?",
                         "resposta": ""
                     }
                 ]
