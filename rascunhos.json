@@ -403,6 +403,10 @@
                     },
                     {
                         "pergunta": "Onde encontrar os sinais exclusivos?",
+                        "resposta": "Para programas e/ou formatos onde sejam disponibilizados mais de um sinal, o assinante pode escolher em qual sinal deseja assistir à transmissão. Para isso, basta acessar o comando ‘Ao Vivo’\n\ne localizar o reality desejado. Caso sejam disponibilizados mais de um sinal, os assinantes dos planos pagos terão todos os sinais disponíveis liberados."
+                    },
+                    {
+                        "pergunta": "",
                         "resposta": ""
                     }
                 ]
