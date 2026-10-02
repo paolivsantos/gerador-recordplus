@@ -200,7 +200,12 @@
             },
             {
                 "tipo": "categoria_faq",
-                "nome_categoria": "Reality Show",
+                "nome_categoria": "Realities Shows",
+                "perguntas": []
+            },
+            {
+                "tipo": "categoria_faq",
+                "nome_categoria": "",
                 "perguntas": []
             }
         ]
