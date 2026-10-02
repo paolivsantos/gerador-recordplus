@@ -182,6 +182,12 @@
     },
     "F.A.Q.": {
         "titulo": "F.A.Q.",
-        "secoes": []
+        "secoes": [
+            {
+                "tipo": "categoria_faq",
+                "nome_categoria": "",
+                "perguntas": []
+            }
+        ]
     }
 }
