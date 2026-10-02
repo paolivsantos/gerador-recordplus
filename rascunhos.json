@@ -268,6 +268,10 @@
                     {
                         "pergunta": "Como funciona a cobrança RecordPlus?",
                         "resposta": "A assinatura do **RecordPlus** funciona no sistema pré-pago de pagamento. Na sua data de renovação, realizamos a cobrança da sua assinatura e liberamos o acesso como assinante pelo próximo ciclo (que pode variar, conforme o plano escolhido).\n\nO acesso não será liberado enquanto não houver pagamento.\n\nA cobrança da sua assinatura será realizada em cartão de crédito ou débito informado no dia de sua aquisição de Plano.\n\nNo caso de pagamentos via Pix , o usuário deverá utilizar o QR code disponibilizado mensalmente em sua conta. Basta escanear o código e você será redirecionado para a cobrança com valor exato de seu plano.\n\nCaso você tenha assinado via Apple Store ou Google Play, a renovação será realizada conforme as definições da plataforma e no meio de pagamento escolhido."
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             },
