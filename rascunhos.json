@@ -454,6 +454,10 @@
                     {
                         "pergunta": "Demais dispositivos compatíveis",
                         "resposta": "Além das Smart TVs mencionadas acima, iOS, Android e computadores, o **RecordPlus** também foi desenvolvido para funcionar no espelhamento via Chromecast. Por enquanto não temos versões autorizadas do **RecordPlus** para demais acessórios similares (ex.: Fire TV Stick, Apple TV, Roku, etc)."
+                    },
+                    {
+                        "pergunta": "",
+                        "resposta": ""
                     }
                 ]
             },
