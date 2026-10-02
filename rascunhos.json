@@ -422,7 +422,12 @@
             {
                 "tipo": "categoria_faq",
                 "nome_categoria": "Informações Técnicas",
-                "perguntas": []
+                "perguntas": [
+                    {
+                        "pergunta": "",
+                        "resposta": ""
+                    }
+                ]
             },
             {
                 "tipo": "categoria_faq",
