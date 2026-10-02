@@ -251,7 +251,7 @@
                     },
                     {
                         "pergunta": "Quais os métodos de pagamento que o RecordPlus aceita?",
-                        "resposta": ""
+                        "resposta": "O **RecordPlus** aceita cartões de crédito, débito, Pix, Google e Apple\n\nCartões de crédito: Visa, Master, Hiper, Elo e Amex. (Para cartões de crédito pré-pagos, verifique a validade do cartão e o saldo disponível).\nCartões de débito: Banco do Brasil, Bradesco, C6 Bank e Next. (Para o banco C6, não são aceitos cartões virtuais).\nPix: via QR code. Um novo QR code será disponibilizado a cada mês para o assinante. Vale lembrar que cada QR code é individual e corresponde ao pagamento de uma mensalidade de sua assinatura.\nPara assinar via Apple ou Google, acesse a sua loja de aplicativos. Para os demais meios de pagamento, acesse https://www.recordplus.com/."
                     }
                 ]
             },
