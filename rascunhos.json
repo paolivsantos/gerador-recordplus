@@ -152,6 +152,11 @@
                 "tipo": "texto",
                 "titulo": "4.Degustação",
                 "conteudo": "4.1. O presente contrato poderá conter período de degustação, para que o Assinante conheça os serviços RecordPlus, sem que algum valor seja cobrado pelo período acordado e demonstrado na Plataforma, sendo este apenas concedido quando se tratar de primeira contratação, que será verificada a possibilidade de tal concessão (elegibilidade) através de análise de dados do Assinante, tais como, forma de pagamento, e-mail, CPF, informações do aparelho, dentre outros).\n\n4.2.No período de degustação o Assinante que tiver efetuado a assinatura diretamente na Plataforma poderá cancelar a Assinatura, através do link [https://www.recordplus.com/account/plan](https://www.recordplus.com/account/plan). O não cancelamento será interpretado como o interesse na continuidade do acesso a Plataforma RecordPlus e incidirá na fatura e cobrança da Assinatura, pelos valores e períodos descritos no momento da contratação.\n\n4.3. O Assinante que tiver feito a sua assinatura através de lojas de aplicativos de terceiros, tais como, mas não se limitando, Apple e Google deverá seguir a regra de cancelamento da respectiva plataforma.\n\n4.4. A continuidade de acesso a plataforma RecordPlus, após o período de degustação, poderá ser suspensa, caso não haja sucesso na ativação/renovação da assinatura, por qualquer motivo gerado pelo Assinante, tais como, informações incorretas, falta de limite de crédito, dentre outros que impeçam a cobrança."
+            },
+            {
+                "tipo": "texto",
+                "titulo": "",
+                "conteudo": ""
             }
         ]
     },
