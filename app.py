@@ -58,16 +58,26 @@ def salvar_rascunhos_github(dados_dict, sha=None):
         "content": conteudo_base64,
         "branch": GITHUB_BRANCH
     }
+    
+    # Se temos um SHA válido, enviamos. Se for None, o campo é omitido para permitir a criação do arquivo do zero.
     if sha:
         payload["sha"] = sha
         
     try:
         response = requests.put(url, headers=headers, json=payload)
+        
         if response.status_code in [200, 201]:
             return True, response.json().get("content", {}).get("sha")
         else:
+            # Exibe o erro exato retornado pelo GitHub na interface do Streamlit
+            try:
+                err_msg = response.json().get('message', response.text)
+            except:
+                err_msg = response.text
+            st.error(f"Erro GitHub ({response.status_code}): {err_msg}")
             return False, sha
-    except Exception:
+    except Exception as e:
+        st.error(f"Exceção de conexão: {str(e)}")
         return False, sha
 
 # ---------------------------------------------------------
@@ -241,12 +251,11 @@ with st.sidebar:
         sucesso, novo_sha = salvar_rascunhos_github(st.session_state.rascunhos, st.session_state.github_sha)
         if sucesso:
             st.session_state.github_sha = novo_sha
-            st.session_state.status_salvamento = "Salvo na nuvem ☁️️"
+            st.session_state.status_salvamento = "Salvo na nuvem ☁"
             st.success("Salvo com sucesso!")
             st.rerun()
         else:
             st.session_state.status_salvamento = "Erro ao salvar ⚠️"
-            st.error("Erro ao salvar no GitHub.")
 
     tipo_pagina = st.selectbox(
         "Selecione o Modelo de Página",
