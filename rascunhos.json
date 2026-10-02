@@ -338,7 +338,12 @@
             {
                 "tipo": "categoria_faq",
                 "nome_categoria": "Conteúdo",
-                "perguntas": []
+                "perguntas": [
+                    {
+                        "pergunta": "",
+                        "resposta": ""
+                    }
+                ]
             },
             {
                 "tipo": "categoria_faq",
