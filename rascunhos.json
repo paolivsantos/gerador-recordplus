@@ -233,14 +233,19 @@
                     },
                     {
                         "pergunta": "Como alternar entre os perfis?",
-                        "resposta": ""
+                        "resposta": "Para alternar entre os perfis criados, basta clicar nos três traços, clicar no seu nome e depois em ‘Gerenciar Perfis’."
                     }
                 ]
             },
             {
                 "tipo": "categoria_faq",
                 "nome_categoria": "Assinatura",
-                "perguntas": []
+                "perguntas": [
+                    {
+                        "pergunta": "",
+                        "resposta": ""
+                    }
+                ]
             },
             {
                 "tipo": "categoria_faq",
