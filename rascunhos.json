@@ -369,6 +369,10 @@
                     },
                     {
                         "pergunta": "Posso baixar para assistir quando estiver offline?",
+                        "resposta": "No momento não temos a disponibilidade dessa função, mas estamos trabalhando para trazê-la em breve!"
+                    },
+                    {
+                        "pergunta": "",
                         "resposta": ""
                     }
                 ]
