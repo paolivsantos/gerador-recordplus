@@ -448,7 +448,7 @@
                         "resposta": "A qualidade da imagem poderá oscilar conforme o dispositivo utilizado, a localização geográfica, a largura de banda disponível e a velocidade da conexão com a Internet. Por isso o **RecordPlus** não faz quaisquer afirmações ou garantias sobre a qualidade da imagem na sua tela.\n\nRecomenda-se uma velocidade mínima de download de 5.0 Mbps para receber conteúdo em HD, definido como resolução 720 p ou superior.\n\nRecomenda-se uma velocidade mínima de download de 25.0 Mbps para receber conteúdo em Full HD, definido como resolução superior a 1080p."
                     },
                     {
-                        "pergunta": "",
+                        "pergunta": "Selecionar a qualidade da transmissão",
                         "resposta": ""
                     }
                 ]
