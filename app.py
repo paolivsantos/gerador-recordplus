@@ -493,183 +493,102 @@ else:
         aplicar_e_sintonizar(st.session_state.rascunhos)
 
 # ---------------------------------------------------------
-# MONTAGEM DO HTML COMPLETO
+# MONTAGEM DO HTML COMPLETO (Autossuficiente para CMS)
 # ---------------------------------------------------------
-html_gerado = f"""<!DOCTYPE html>
-<html data-theme="dark" lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <title>RecordPlus | Vídeos, rádios, podcasts para você curtir como quiser.</title>
-    <link id="icon" rel="icon" type="image/png" href="https://media.r7.com/r7/media/recordplus/images/faviconrecordplus.ico">
-    <link href="https://media.r7.com/r7/media/recordplus/css/all.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/theme.css">
-    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/styles.css">
-    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/help.css">
-    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/Header.css">
-    <link rel="stylesheet" href="https://media.r7.com/r7/media/recordplus/css/footer.css">
-    <style>
-        table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
-        th, td {{ border: 1px solid #ccc; padding: 10px; text-align: left; }}
-        th {{ background-color: #5c4a76; color: #ffffff; }}
-        
-        .bottom-footer, .bottom-footer .list-footer {{
-            text-align: center !important;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-        }}
-        .bottom-footer .list-footer {{
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }}
-        .bottom-footer .list-footer li {{
-            display: inline-flex;
-            align-items: center;
-        }}
-        .bottom-footer .list-footer li a {{
-            padding: 0 8px;
-        }}
-        .bottom-footer .list-footer li span {{
-            padding: 0 2px;
-            opacity: 0.7;
-        }}
-        
-        .faq-category-wrapper {{ margin-bottom: 16px; }}
-        
-        details.faq-category-accordion summary::-webkit-details-marker,
-        details.faq-item-accordion summary::-webkit-details-marker {{ display: none; }}
-        details.faq-category-accordion > summary,
-        details.faq-item-accordion > summary {{ list-style: none; }}
+html_gerado = f"""<!-- Estilos de segurança embutidos para garantir carregamento no CMS -->
+<style>
+    .recordplus-container {{
+        font-family: Arial, sans-serif;
+        color: #e0e0e0;
+        background-color: #121212;
+        padding: 20px;
+        line-height: 1.6;
+    }}
+    .recordplus-container h1, .recordplus-container h3 {{
+        color: #ffffff;
+    }}
+    .recordplus-container table {{
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }}
+    .recordplus-container th, .recordplus-container td {{
+        border: 1px solid #444;
+        padding: 10px;
+        text-align: left;
+    }}
+    .recordplus-container th {{
+        background-color: #5c4a76;
+        color: #ffffff;
+    }}
+    .faq-category-wrapper {{
+        margin-bottom: 16px;
+    }}
+    details.faq-category-accordion summary::-webkit-details-marker,
+    details.faq-item-accordion summary::-webkit-details-marker {{
+        display: none;
+    }}
+    details.faq-category-accordion > summary,
+    details.faq-item-accordion > summary {{
+        list-style: none;
+        cursor: pointer;
+    }}
+    .faq-category-accordion > summary.faq-category-title {{
+        font-size: 20px;
+        font-weight: 700;
+        padding: 12px 24px 12px 0;
+        position: relative;
+    }}
+    .faq-items-box {{
+        background-color: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 12px;
+        margin-top: 8px;
+        margin-bottom: 12px;
+    }}
+    details.faq-item-accordion {{
+        margin-bottom: 8px;
+        border-radius: 6px;
+        background-color: rgba(255, 255, 255, 0.04);
+    }}
+    summary.faq-question {{
+        font-size: 16px;
+        font-weight: 600;
+        padding: 12px 40px 12px 16px;
+        position: relative;
+    }}
+    .faq-answer {{
+        font-size: 16px;
+        padding: 0 16px 14px 16px;
+    }}
+    .faq-answer a {{
+        color: inherit;
+        text-decoration: underline;
+    }}
+</style>
 
-        .faq-category-accordion > summary.faq-category-title {{
-            font-size: 20px;
-            font-weight: 700;
-            padding: 12px 24px 12px 0;
-            cursor: pointer;
-            position: relative;
-        }}
-        .faq-category-accordion > summary.faq-category-title::after {{
-            content: '';
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%) rotate(0deg);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 6px solid currentColor;
-            transition: transform 0.3s ease;
-        }}
-        .faq-category-accordion[open] > summary.faq-category-title::after {{
-            transform: translateY(-50%) rotate(180deg);
-        }}
-
-        .faq-items-box {{
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 8px;
-            margin-bottom: 12px;
-        }}
-
-        details.faq-item-accordion {{
-            margin-bottom: 8px;
-            border-radius: 6px;
-            background-color: rgba(255, 255, 255, 0.04);
-        }}
-        details.faq-item-accordion:last-child {{
-            margin-bottom: 0;
-        }}
-        summary.faq-question {{
-            font-size: 16px;
-            font-weight: 600;
-            padding: 12px 40px 12px 16px;
-            cursor: pointer;
-            position: relative;
-        }}
-        summary.faq-question::after {{
-            content: '';
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%) rotate(0deg);
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 5px solid currentColor;
-            transition: transform 0.3s ease;
-        }}
-        details.faq-item-accordion[open] > summary.faq-question::after {{
-            transform: translateY(-50%) rotate(180deg);
-        }}
-
-        .faq-answer {{
-            font-size: 16px;
-            padding: 0 16px 14px 16px;
-            line-height: 1.6;
-        }}
-        .faq-answer a {{
-            color: inherit;
-            text-decoration: underline;
-        }}
-    </style>
-</head>
-<body>
-    <div id="modal_container"></div>
-    <div class="menu-overlay"></div>
-    
-    <div class="header">
-        <div class="menu-left-wrapper">
-            <a href="https://www.recordplus.com/">
-                <img alt="Play PLUS" class="img-header" src="https://media.r7.com/r7/media/recordplus/images/im_logo_recordplus.png">
-            </a>
-        </div>
-    </div>
-
+<div class="recordplus-container">
     <div class="container-help mt-100">
         <h1 class="home-section-termos-title">{titulo_principal}</h1>
         <span class="category-line-termos line-termos"></span>
         {html_secoes_geradas}
     </div>
+</div>
 
-    <footer data-theme="light">
-        <div class="bottom-footer">
-            <ul class="list-footer">
-                <li><a href="https://descubra.recordplus.com/contratoassinatura/">Contrato de Assinatura</a><span>|</span></li>
-                <li><a href="https://descubra.recordplus.com/faq/">FAQ</a><span>|</span></li>
-                <li><a href="https://descubra.recordplus.com/politica/">Privacidade</a><span>|</span></li>
-                <li><a href="https://descubra.recordplus.com/termosdeuso/">Termos de Uso</a></li>
-            </ul>
-        </div>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {{
-            const itemAccordions = document.querySelectorAll('details.faq-item-accordion');
-            itemAccordions.forEach((item) => {{
-                item.addEventListener('toggle', (e) => {{
-                    if (item.open) {{
-                        itemAccordions.forEach((other) => {{
-                            if (other !== item && other.open) {{
-                                other.open = false;
-                            }}
-                        }});
-                    }}
-                }});
+<script>
+    document.addEventListener('DOMContentLoaded', () => {{
+        const itemAccordions = document.querySelectorAll('details.faq-item-accordion');
+        itemAccordions.forEach((item) => {{
+            item.addEventListener('toggle', (e) => {{
+                if (item.open) {{
+                    itemAccordions.forEach((other) => {{
+                        if (other !== item && other.open) {{
+                            other.open = false;
+                        }}
+                    }});
+                }}
             }});
         }});
-    </script>
-</body>
-</html>"""
-
-st.divider()
-if st.button("🚀 Gerar Código HTML", type="primary", use_container_width=True):
-    st.success("HTML gerado com sucesso!")
-    st.subheader("Código HTML final para cópia:")
-    st.code(html_gerado, language="html")
+    }});
+</script>"""
