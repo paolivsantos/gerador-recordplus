@@ -592,3 +592,11 @@ html_gerado = f"""<!-- Estilos de segurança embutidos para garantir carregament
         }});
     }});
 </script>"""
+# ---------------------------------------------------------
+# EXIBIÇÃO DO HTML GERADO
+# ---------------------------------------------------------
+st.divider()
+if st.button("🚀 Gerar Código HTML", type="primary", use_container_width=True):
+    st.success("HTML gerado com sucesso!")
+    st.subheader("Código HTML final para cópia:")
+    st.code(html_gerado, language="html")
