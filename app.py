@@ -626,7 +626,7 @@ html_gerado = f"""<!DOCTYPE html>
     
     <div class="header">
         <div class="menu-left-wrapper">
-            <a href="https://www.recordplus.com/">
+            <a href="https://www.recordplus.com/" target="_blank">
                 <img alt="Play PLUS" class="img-header" src="https://media.r7.com/r7/media/recordplus/images/im_logo_recordplus.png">
             </a>
         </div>
@@ -641,10 +641,10 @@ html_gerado = f"""<!DOCTYPE html>
     <footer data-theme="light">
         <div class="bottom-footer">
             <ul class="list-footer">
-                <li><a href="https://descubra.recordplus.com/contratoassinatura/">Contrato de Assinatura</a><span>|</span></li>
-                <li><a href="https://descubra.recordplus.com/faq/">FAQ</a><span>|</span></li>
-                <li><a href="https://descubra.recordplus.com/politica/">Privacidade</a><span>|</span></li>
-                <li><a href="https://descubra.recordplus.com/termosdeuso/">Termos de Uso</a></li>
+                <li><a href="https://descubra.recordplus.com/contratoassinatura/" target="_blank">Contrato de Assinatura</a><span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/faq/" target="_blank">FAQ</a><span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/politica/" target="_blank">Privacidade</a><span>|</span></li>
+                <li><a href="https://descubra.recordplus.com/termosdeuso/" target="_blank">Termos de Uso</a></li>
             </ul>
         </div>
     </footer>
